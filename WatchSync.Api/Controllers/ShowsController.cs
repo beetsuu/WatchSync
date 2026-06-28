@@ -53,11 +53,10 @@ namespace WatchSync.Api.Controllers
 
         // PUT api/shows/5
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Show updated)
+        public IActionResult Update(int id, [FromBody] UpdateShowDto updated)
         {
             var show = _context.Shows.FirstOrDefault(s => s.ShowId == id);
             if (show == null) return NotFound();
-
             show.Title = updated.Title;
             show.TotalEpisodes = updated.TotalEpisodes;
             show.CurrentEpisode = updated.CurrentEpisode;

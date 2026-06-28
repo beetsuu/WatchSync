@@ -1,14 +1,11 @@
 import type { Show } from "../types";
+import ShowItem from "../components/ShowItem";
 
-function ShowList({ shows }: { shows: Show[] }) {
+function ShowList({ shows, onPlusOne }: { shows: Show[], onPlusOne: (show: Show) => void }) {
     return (
         <div>
             {shows.map(show => (
-                <div key={show.showId}>
-                    <p> {show.title}</p>
-                    <p> {show.currentEpisode} / {show.totalEpisodes}</p>
-                    <p> {show.addedByUserId}</p>
-                </div>
+                <ShowItem key={show.showId} show={show} onPlusOne={onPlusOne} />
             ))}
         </div>
     );

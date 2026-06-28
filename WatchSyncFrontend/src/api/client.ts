@@ -18,6 +18,34 @@ export async function getWatchPartyMembers(): Promise<WatchPartyMember[]> {
     return get<WatchPartyMember[]>('/watchPartyMembers')
 }
 
+export async function updateShow(show: Show) {
+    await fetch(BASE_URL + '/shows/' + show.showId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            title: show.title,
+            totalEpisodes: show.totalEpisodes,
+            currentEpisode: show.currentEpisode,
+            coverUrl: show.coverUrl
+        })
+    }
+    );
+}
+
+export async function updateWatchParty(watchParty: WatchParty) {
+    await fetch(BASE_URL + '/watchParties/' + watchParty.watchPartyId, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            name: watchParty.name,
+            currentTurnCount: watchParty.currentTurnCount,
+            currentTurnOrder: watchParty.currentTurnOrder,
+            turnLimit: watchParty.turnLimit
+
+        })
+    }
+    );
+}
 
 
 
