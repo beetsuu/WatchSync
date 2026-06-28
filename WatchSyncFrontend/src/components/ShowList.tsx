@@ -1,7 +1,8 @@
 import type { Show, User } from "../types";
 import ShowItem from "../components/ShowItem";
 
-function ShowList({ shows, onPlusOne, onMinusOne, users }: { shows: Show[], onPlusOne: (show: Show) => void, onMinusOne: (show: Show) => void, users: User[] }) {
+function ShowList({ shows, onPlusOne, onMinusOne, users, onDelete, onEdit }:
+    { shows: Show[], onPlusOne: (show: Show) => void, onMinusOne: (show: Show) => void, users: User[], onDelete: (showId: number) => void, onEdit: (show: Show) => void }) {
 
 
     return (
@@ -15,6 +16,9 @@ function ShowList({ shows, onPlusOne, onMinusOne, users }: { shows: Show[], onPl
                     onMinusOne={onMinusOne}
                     onPlusOne={onPlusOne}
                     addedByUserName={user?.name ?? 'Unknown'}
+                    onDelete={onDelete}
+                    onEdit={onEdit}
+
                 />
             })}
         </div>

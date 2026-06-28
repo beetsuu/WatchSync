@@ -8,20 +8,26 @@ import AddShowModal from './components/AddShowModal';
 import ShowList from './components/ShowList';
 import CreateWatchPartyModal from './components/CreateWatchPartyModal';
 import type { Show } from './types';
+import Modal from './components/Modal';
 
 function App() {
 
-  const { shows, handlePlusOne, handleMinusOne, handleAddShow } = useShows();
+  const { shows, handlePlusOne, handleMinusOne, handleAddShow, handleDelete, handleEdit } = useShows();
   const { watchParty, members, handleNextUser, handlePrevUser, handleCreateWatchParty, handleTurnCountUp, handleTurnCountDown } = useWatchParty();
   const { users } = useUsers();
   const [showModal, setShowModal] = useState(false);
   const [showWpModal, setShowWpModal] = useState(false);
+  const [showTurnWarning, setShowTurnWarning] = useState(false);
   const currentMember = members.find(m => m.turnOrder === watchParty?.currentTurnOrder);
   const currentUser = users.find(u => u.userId === currentMember?.userId) ?? null;
+
 
   function onPlusOne(updatedShow: Show) {
     handlePlusOne(updatedShow);
     handleTurnCountUp();
+    if (watchParty && watchParty.currentTurnCount + 1 == watchParty.turnLimit) {
+      setShowTurnWarning(true);
+    }
   }
 
   function onMinusOne(updatedShow: Show) {
@@ -51,45 +57,34 @@ function App() {
 
 
 
-      {
-        showWpModal && (
-          <div className="fixed inset-0 flex items-center justify-center z-50"
-            style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
-            onClick={() => setShowWpModal(false)}
-          >
-            <div onClick={e => e.stopPropagation()}>
-              <CreateWatchPartyModal
-                users={users}
-                onClose={() => setShowWpModal(false)}
-                onAdd={handleCreateWatchParty}
-              />
+      {showTurnWarning && watchParty && currentUser && (
+        <Modal onClose={() => setShowTurnWarning(false)}>
+          <div className="flex flex-col gap-4 p-6" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
+            <h2>That's it for {currentUser.name}!</h2>
+            <p>Do you want to switch to the next person?</p>
+            <div className="flex gap-2">
+              <button style={theme.buttonStyle} onClick={() => { handleNextUser(); setShowTurnWarning(false); }}>Switch</button>
+              <button style={theme.buttonStyle} onClick={() => setShowTurnWarning(false)}>Keep going</button>
             </div>
           </div>
-        )
-      }
+        </Modal>
+      )}
 
-      {
-        showModal && currentUser && watchParty && (
-          <div
-            className="fixed inset-0 flex items-center justify-center z-50"
-            style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
-            onClick={() => setShowModal(false)}
-          >
-            <div onClick={e => e.stopPropagation()}>
-              <AddShowModal
-                currentUser={currentUser}
-                watchParty={watchParty}
-                onClose={() => setShowModal(false)}
-                onAdd={handleAddShow}
-              />
-            </div>
-          </div>
-        )
-      }
+      {showWpModal && (
+        <Modal onClose={() => setShowWpModal(false)}>
+          <CreateWatchPartyModal users={users} onClose={() => setShowWpModal(false)} onAdd={handleCreateWatchParty} />
+        </Modal>
+      )}
+
+      {showModal && currentUser && watchParty && (
+        <Modal onClose={() => setShowModal(false)}>
+          <AddShowModal currentUser={currentUser} watchParty={watchParty} onClose={() => setShowModal(false)} onAdd={handleAddShow} />
+        </Modal>
+      )}
 
       {
         watchParty && (
-          <ShowList shows={shows} onPlusOne={onPlusOne} onMinusOne={onMinusOne} users={users} />)
+          <ShowList shows={shows} onPlusOne={onPlusOne} onMinusOne={onMinusOne} users={users} onDelete={handleDelete} onEdit={handleEdit} />)
       }
 
     </div >

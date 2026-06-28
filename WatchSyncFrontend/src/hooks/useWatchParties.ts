@@ -19,12 +19,11 @@ export function useWatchParty() {
     }
 
     function handleTurnCountDown() {
-        if (!watchParty) return;
+        if (!watchParty || watchParty.currentTurnCount <= 0) return;
         const updated = { ...watchParty, currentTurnCount: watchParty.currentTurnCount - 1 };
         updateWatchParty(updated);
         setWatchParty(updated);
     }
-
     function handleNextUser() {
         if (!watchParty || members.length === 0) return;
         const nextOrder = watchParty.currentTurnOrder % members.length + 1;

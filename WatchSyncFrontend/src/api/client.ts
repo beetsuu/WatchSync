@@ -58,6 +58,12 @@ export async function updateShow(show: Show) {
     );
 }
 
+export async function deleteShow(showId: number) {
+    await fetch(BASE_URL + '/shows/' + showId, {
+        method: 'DELETE'
+    });
+}
+
 export async function updateWatchParty(watchParty: WatchParty) {
     await fetch(BASE_URL + '/watchParties/' + watchParty.watchPartyId, {
         method: 'PUT',

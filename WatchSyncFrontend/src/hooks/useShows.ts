@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getShows, updateShow, createShow } from '../api/client';
+import { getShows, updateShow, createShow, deleteShow } from '../api/client';
 import type { Show, CreateShowDto } from '../types';
 
 export function useShows() {
@@ -24,5 +24,15 @@ export function useShows() {
         setShows([...shows, createdShow]);
     }
 
-    return { shows, handlePlusOne, handleMinusOne, handleAddShow };
+    async function handleDelete(showId: number) {
+        await deleteShow(showId);
+        setShows(shows.filter(s => s.showId !== showId));
+    }
+
+    async function handleEdit(updatedShow: Show) {
+        await updateShow(updatedShow);
+        setShows(shows.map(s => s.showId === updatedShow.showId ? updatedShow : s));
+    }
+
+    return { shows, handlePlusOne, handleMinusOne, handleAddShow, handleDelete, handleEdit };
 }
