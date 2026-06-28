@@ -48,3 +48,19 @@ export interface WatchPartyMember {
     turnOrder: number,
     joinedAt: string
 }
+
+export interface CreateWatchPartyDto {
+    name: string;
+    turnLimit: number;
+}
+
+export interface CreateWatchPartyMemberDto {
+    watchPartyId: number;
+    userId: number;
+    turnOrder: number;
+}
+
+export interface CreateWatchPartyDto {
+    name: string;
+    turnLimit: number;
+}

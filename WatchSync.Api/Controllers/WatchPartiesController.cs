@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WatchSync.Api.Data;
+using WatchSync.Api.DTOs;
 using WatchSync.Api.Models;
 
 namespace WatchSync.Api.Controllers
@@ -31,12 +32,20 @@ namespace WatchSync.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromBody] WatchParty watchParty)
+        public IActionResult Create([FromBody] CreateWatchPartyDto dto)
         {
-            watchParty.CreatedAt = DateTime.UtcNow;
-            _context.WatchParties.Add(watchParty);
+            var wp = new WatchParty
+            {
+                Name = dto.Name,
+                TurnLimit = dto.TurnLimit,
+                CurrentTurnOrder = 1,
+                CurrentTurnCount = 0,
+                CreatedAt = DateTime.UtcNow
+            };
+            wp.CreatedAt = DateTime.UtcNow;
+            _context.WatchParties.Add(wp);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = watchParty.WatchPartyId }, watchParty);
+            return CreatedAtAction(nameof(GetById), new { id = wp.WatchPartyId }, wp);
         }
 
         [HttpPut("{id}")]

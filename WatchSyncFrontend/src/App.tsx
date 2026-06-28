@@ -1,64 +1,66 @@
-import './App.css'
-import ShowList from './components/ShowList';
-import './api/client';
-import { useEffect, useState } from 'react';
-import type { CreateShowDto, Show, User, WatchParty } from './types';
-import { addShow, getShows, getUsers, getWatchParties, updateWatchParty } from './api/client';
+import { useShows } from './hooks/useShows';
+import { useWatchParty } from './hooks/useWatchParties';
+import { useUsers } from './hooks/useUsers';
+import { useState } from 'react';
+import { theme } from './theme';
 import WatchPartyBar from './components/WatchPartyBar';
 import AddShowModal from './components/AddShowModal';
-
+import ShowList from './components/ShowList';
 
 function App() {
 
-  const [shows, setShows] = useState<Show[]>([]);
-  const [watchParty, setWatchParty] = useState<WatchParty | null>(null);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
+  const { shows, handlePlusOne, handleMinusOne, handleAddShow } = useShows();
+  const { watchParty, members, handleNextUser, handlePrevUser, handleCreateWatchParty, handleTurnCountUp, handleTurnCountDown } = useWatchParty();
+  const { users, currentUser } = useUsers();
   const [showModal, setShowModal] = useState(false);
+  const [showWpModal, setShowWpModal] = useState(false);
 
-  useEffect(() => {
-    getShows().then(data => setShows(data.sort((a, b) => a.showId - b.showId)));
-    getUsers().then(data => {
-      setCurrentUser(data[0]);
-      setUsers(data.sort((a, b) => a.userId - b.userId));
-    });
-    getWatchParties().then(data => setWatchParty(data[0]));
-
-  }, []);
-
-  function handlePlusOne(updatedShow: Show) {
-    setShows(shows.map(s => s.showId === updatedShow.showId ? updatedShow : s));
-
-    if (watchParty) {
-      const updatedWatchParty = { ...watchParty, currentTurnCount: watchParty.currentTurnCount + 1 };
-      updateWatchParty(updatedWatchParty);
-      setWatchParty(updatedWatchParty);
-    }
+  function onPlusOne(updatedShow: Show) {
+    handlePlusOne(updatedShow);
+    handleTurnCountUp();
   }
 
-  async function handleAddShow(newShow: CreateShowDto) {
-    const createdShow = await addShow(newShow);
-    setShows([...shows, createdShow]);
-    setShowModal(false);
+  function onMinusOne(updatedShow: Show) {
+    handleMinusOne(updatedShow);
+    handleTurnCountDown();
   }
-
 
   return (
-    <div>
-      <h1>WatchSync</h1>
-      {watchParty && currentUser && (
-        <WatchPartyBar watchParty={watchParty} currentUser={currentUser} />
-      )}
-      <button onClick={() => setShowModal(true)}>+ Show hinzufügen</button>
-      {showModal && watchParty && currentUser && (
-        <AddShowModal
-          currentUser={currentUser}
-          onClose={() => setShowModal(false)}
-          onAdd={handleAddShow}
-        />
+    <div className="min-h-screen" style={{ backgroundColor: theme.background, color: theme.text }}>
+      <div
+        className="flex items-center justify-between px-6 py-4"
+        style={{ borderBottom: `2px solid ${theme.accent}` }}
+      >
+        <h1 className="text-xl font-bold">WatchSync</h1>
+
+        {watchParty && currentUser && (
+          <WatchPartyBar watchParty={watchParty} currentUser={currentUser} onPrevUser={handlePrevUser} onNextUser={handleNextUser} />
+        )}
+
+        <button
+          onClick={() => setShowModal(true)}
+          style={theme.buttonStyle}
+        >
+          + Add
+        </button>
+      </div>
+      {showModal && currentUser && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50"
+          style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
+          onClick={() => setShowModal(false)}
+        >
+          <div onClick={e => e.stopPropagation()}>
+            <AddShowModal
+              currentUser={currentUser}
+              onClose={() => setShowModal(false)}
+              onAdd={handleAddShow}
+            />
+          </div>
+        </div>
       )}
       {watchParty && (
-        <ShowList shows={shows} onPlusOne={handlePlusOne} users={users} />)}
+        <ShowList shows={shows} onPlusOne={onPlusOne} onMinusOne={onMinusOne} users={users} />)}
 
     </div>
   )
