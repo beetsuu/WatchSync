@@ -1,5 +1,6 @@
 export interface Show {
     showId: number,
+    watchPartyId: number,
     addedByUserId: number,
     title: string,
     totalEpisodes: number,

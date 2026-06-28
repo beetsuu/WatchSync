@@ -29,9 +29,10 @@ function CreateWatchPartyModal({ users, onAdd, onClose }: { users: User[], onAdd
                     /> {user.name}
                 </label>
             ))}
-
-            <button onClick={onClose}>Cancel</button>
-            <button onClick={handleCreate}>Create</button>
+            <div className="flex gap-2">
+                <button style={theme.buttonStyle} onClick={handleCreate}>Create</button>
+                <button style={theme.buttonStyle} onClick={onClose}>Cancel</button>
+            </div>
         </div>
     )
 }

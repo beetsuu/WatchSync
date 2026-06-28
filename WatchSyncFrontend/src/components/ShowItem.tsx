@@ -22,7 +22,7 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName }: { show: Show
             <div className="w-full h-40" style={{ backgroundColor: theme.border }}>
                 {show.coverUrl
                     ? <img src={show.coverUrl} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full flex items-center justify-center" style={{ color: theme.textMuted }}>no image</div>
+                    : <img className="w-full h-full flex items-center justify-center" style={{ color: theme.textMuted }} src={show.coverUrl ?? "noImage"}></img>
                 }
             </div>
 

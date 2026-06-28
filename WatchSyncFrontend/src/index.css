@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+input {
+    background-color: #0D0D0D;
+    color: #FFFFFF;
+    border: 1px solid #2F6F6A;
+    border-radius: 8px;
+    padding: 8px 12px;
+    width: 100%;
+    outline: none;
+}
+
+input:focus {
+    border-color: #C78A1E;
+}
+
+button:hover {
+    opacity: 0.85;
+    cursor: pointer;
+}
