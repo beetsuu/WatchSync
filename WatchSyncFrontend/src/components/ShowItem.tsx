@@ -42,9 +42,9 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEd
         <div className="flex flex-col border overflow-hidden" style={{ backgroundColor: theme.card, borderColor: theme.border, borderRadius: theme.radius }}>
 
             {/* Bild oben */}
-            <div className="w-full h-40 relative" style={{ backgroundColor: theme.border }}>
+            <div className="w-full h-32 md:h-40 relative" style={{ backgroundColor: theme.border }}>
                 {show.coverUrl
-                    ? <img src={show.coverUrl} className="w-full h-full object-cover" />
+                    ? <img src={show.coverUrl} className="w-full h-full object-contain" />
                     : <div className="w-full h-full flex items-center justify-center" style={{ color: theme.textMuted }}>no image</div>
                 }
                 <button

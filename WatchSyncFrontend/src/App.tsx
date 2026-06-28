@@ -18,6 +18,7 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [showWpModal, setShowWpModal] = useState(false);
   const [showTurnWarning, setShowTurnWarning] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const currentMember = members.find(m => m.turnOrder === watchParty?.currentTurnOrder);
   const currentUser = users.find(u => u.userId === currentMember?.userId) ?? null;
 
@@ -38,20 +39,42 @@ function App() {
   return (
 
     <div className="min-h-screen" style={{ backgroundColor: theme.background, color: theme.text }}>
-
       <div
-        className="flex items-center justify-between px-6 py-4"
-        style={{ borderBottom: `2px solid ${theme.accent}` }}
+        className="flex items-center px-6 py-4 sticky top-0 z-40"
+        style={{ borderBottom: `2px solid ${theme.accent}`, backgroundColor: theme.background }}
       >
-        <h1 className="text-xl font-bold">WatchSync</h1>
+        {/* Links */}
+        <div className="flex-1">
+          <h1 className="text-sm font-bold">WatchSync</h1>
+        </div>
 
-        {watchParty && currentUser && (
-          <WatchPartyBar watchParty={watchParty} currentUser={currentUser} onPrevUser={handlePrevUser} onNextUser={handleNextUser} />
-        )}
+        {/* Mitte */}
+        <div className="flex-1 flex justify-center">
+          {watchParty && currentUser && (
+            <WatchPartyBar watchParty={watchParty} currentUser={currentUser} onPrevUser={handlePrevUser} onNextUser={handleNextUser} />
+          )}
+        </div>
 
-        <div className="flex gap-2">
-          <button onClick={() => setShowWpModal(true)} style={theme.buttonStyle}>+ WP </button>
-          <button onClick={() => setShowModal(true)} style={theme.buttonStyle}> + Add </button>
+        {/* Rechts */}
+        <div className="flex-1 flex justify-end gap-2">
+          {/* Desktop */}
+          <div className="hidden md:flex gap-2">
+            <button onClick={() => setShowWpModal(true)} style={theme.buttonStyle}>+ WP</button>
+            <button onClick={() => setShowModal(true)} style={theme.buttonStyle}>+ Add</button>
+          </div>
+          {/* Mobile Hamburger */}
+          <div className="md:hidden relative">
+            <button onClick={() => setMenuOpen(!menuOpen)} style={theme.buttonStyle}>☰</button>
+            {menuOpen && (
+              <div
+                className="absolute right-0 top-12 flex flex-col gap-2 p-4 z-50"
+                style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}
+              >
+                <button onClick={() => { setShowWpModal(true); setMenuOpen(false); }} style={theme.buttonStyle}>+ WP</button>
+                <button onClick={() => { setShowModal(true); setMenuOpen(false); }} style={theme.buttonStyle}>+ Show</button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

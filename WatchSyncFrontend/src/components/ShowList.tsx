@@ -6,7 +6,7 @@ function ShowList({ shows, onPlusOne, onMinusOne, users, onDelete, onEdit }:
 
 
     return (
-        <div className="grid grid-cols-4 gap-4 p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
 
             {shows.map(show => {
                 const user = users.find(u => u.userId === show.addedByUserId);
