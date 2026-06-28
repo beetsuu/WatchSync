@@ -1,6 +1,6 @@
 import type { Show, User, WatchParty, WatchEntry, WatchPartyMember } from "../types/index";
 
-const BASE_URL = 'http://localhost:7202/api';
+const BASE_URL = 'https://localhost:7202/api';
 
 export async function getShows(): Promise<Show[]> {
     return get<Show[]>('/shows')
