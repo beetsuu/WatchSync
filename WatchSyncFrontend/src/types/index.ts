@@ -1,12 +1,19 @@
 export interface Show {
     showId: number,
-    watchPartyId: number,
     addedByUserId: number,
     title: string,
     totalEpisodes: number,
     currentEpisode: number,
     coverUrl: string | null,
     createdAt: string
+}
+
+export interface CreateShowDto {
+    addedByUserId: number;
+    title: string;
+    totalEpisodes: number;
+    currentEpisode: number;
+    coverUrl: string | null;
 }
 
 export interface User {
@@ -40,13 +47,4 @@ export interface WatchPartyMember {
     userId: number,
     turnOrder: number,
     joinedAt: string
-}
-
-export interface CreateShowDto {
-    watchPartyId: number;
-    addedByUserId: number;
-    title: string;
-    totalEpisodes: number;
-    currentEpisode: number;
-    coverUrl: string | null;
 }

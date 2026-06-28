@@ -37,7 +37,6 @@ namespace WatchSync.Api.Controllers
         {
             var show = new Show
             {
-                WatchPartyId = showDto.WatchPartyId,
                 AddedByUserId = showDto.AddedByUserId,
                 Title = showDto.Title,
                 TotalEpisodes = showDto.TotalEpisodes,

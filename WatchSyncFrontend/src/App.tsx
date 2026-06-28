@@ -52,7 +52,6 @@ function App() {
       <button onClick={() => setShowModal(true)}>+ Show hinzufügen</button>
       {showModal && watchParty && currentUser && (
         <AddShowModal
-          watchParty={watchParty}
           currentUser={currentUser}
           onClose={() => setShowModal(false)}
           onAdd={handleAddShow}

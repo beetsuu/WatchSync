@@ -1,14 +1,13 @@
 import { useState } from "react";
-import type { CreateShowDto, User, WatchParty } from "../types";
+import type { CreateShowDto, User } from "../types";
 
-function AddShowModal({ watchParty, currentUser, onAdd, onClose }: { watchParty: WatchParty, currentUser: User, onAdd: (show: CreateShowDto) => void, onClose: () => void }) {
+function AddShowModal({ currentUser, onAdd, onClose }: { currentUser: User, onAdd: (show: CreateShowDto) => void, onClose: () => void }) {
 
     const [title, setTitle] = useState('');
     const [totalEpisodes, setTotalEpisodes] = useState(0);
 
     function handleAdd() {
         const newShow = {
-            watchPartyId: watchParty.watchPartyId,
             addedByUserId: currentUser.userId,
             title,
             totalEpisodes,
