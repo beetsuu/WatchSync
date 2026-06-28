@@ -41,3 +41,12 @@ export interface WatchPartyMember {
     turnOrder: number,
     joinedAt: string
 }
+
+export interface CreateShowDto {
+    watchPartyId: number;
+    addedByUserId: number;
+    title: string;
+    totalEpisodes: number;
+    currentEpisode: number;
+    coverUrl: string | null;
+}

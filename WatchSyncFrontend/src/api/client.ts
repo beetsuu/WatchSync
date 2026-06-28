@@ -1,4 +1,4 @@
-import type { Show, User, WatchParty, WatchEntry, WatchPartyMember } from "../types/index";
+import type { Show, User, WatchParty, WatchEntry, WatchPartyMember, CreateShowDto } from "../types/index";
 
 const BASE_URL = 'https://localhost:7202/api';
 
@@ -16,6 +16,15 @@ export async function getWatchEntries(): Promise<WatchEntry[]> {
 }
 export async function getWatchPartyMembers(): Promise<WatchPartyMember[]> {
     return get<WatchPartyMember[]>('/watchPartyMembers')
+}
+
+export async function addShow(show: CreateShowDto): Promise<Show> {
+    const response = await fetch(BASE_URL + '/shows', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(show)
+    });
+    return await response.json();
 }
 
 export async function updateShow(show: Show) {
@@ -46,8 +55,6 @@ export async function updateWatchParty(watchParty: WatchParty) {
     }
     );
 }
-
-
 
 async function get<T>(route: string): Promise<T> {
     const response = await fetch(BASE_URL + route);
