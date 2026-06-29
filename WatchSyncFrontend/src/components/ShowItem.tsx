@@ -39,34 +39,53 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEd
     }
 
     return (
-        <div className="flex flex-col border overflow-hidden" style={{ backgroundColor: theme.card, borderColor: theme.border, borderRadius: theme.radius }}>
+        <div className="flex flex-col overflow-hidden relative" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
 
-            {/* Bild oben */}
-            <div className="w-full h-32 md:h-40 relative" style={{ backgroundColor: theme.border }}>
+            {/* Bild */}
+            <div className="w-full relative" style={{ height: '200px', backgroundColor: theme.border }}>
                 {show.coverUrl
-                    ? <img src={show.coverUrl} className="w-full h-full object-contain" />
-                    : <div className="w-full h-full flex items-center justify-center" style={{ color: theme.textMuted }}>no image</div>
+                    ? <img src={show.coverUrl} className="w-full h-full object-cover" />
+                    : <div className="w-full h-full flex items-center justify-center text-sm" style={{ color: theme.textMuted }}>no image</div>
                 }
+                {/* Settings Button */}
                 <button
                     onClick={() => setShowSettings(true)}
-                    className="absolute top-2 right-2 p-1"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: '6px' }}
+                    className="absolute top-2 right-2 text-xs px-2 py-1"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '6px', color: '#ffffff' }}
                 >
-                    ⚙️
+                    ⚙
                 </button>
+                {/* Episode Badge */}
+                <div className="absolute bottom-2 left-2 px-2 py-1 text-xs font-mono font-bold"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: '6px', color: theme.accent }}>
+                    {show.currentEpisode} / {show.totalEpisodes}
+                </div>
             </div>
 
             {/* Content */}
-            <div className="flex flex-col gap-1 p-4">
-                <p className="font-bold">{show.title}</p>
-                <p style={{ color: theme.textMuted, fontSize: '12px' }}>{addedByUserName}</p>
-                <p style={{ fontFamily: 'monospace' }}>{show.currentEpisode} / {show.totalEpisodes}</p>
+            <div className="p-3 flex flex-col gap-1">
+                <p className="font-bold text-sm">{show.title}</p>
+                <p className="text-xs" style={{ color: theme.textMuted }}>{addedByUserName}</p>
             </div>
 
-            {/* Buttons */}
-            <div className="flex gap-2 p-4 pt-0">
-                <button onClick={handleMinusOne} disabled={show.currentEpisode <= 0} className="flex-1 py-2 font-bold" style={theme.buttonStyle}>-1</button>
-                <button onClick={handlePlusOne} disabled={show.currentEpisode >= show.totalEpisodes} className="flex-1 py-2 font-bold" style={theme.buttonStyle}>+1</button>
+            <div className="flex border-t" style={{ borderColor: theme.border }}>
+                <button
+                    onClick={handleMinusOne}
+                    disabled={show.currentEpisode <= 0}
+                    className="flex-1 py-2 font-bold text-base"
+                    style={{ color: theme.accent, backgroundColor: 'transparent' }}
+                >
+                    −
+                </button>
+                <div style={{ width: '1px', backgroundColor: theme.border }}></div>
+                <button
+                    onClick={handlePlusOne}
+                    disabled={show.currentEpisode >= show.totalEpisodes}
+                    className="flex-1 py-2 font-bold text-base"
+                    style={{ color: theme.accent, backgroundColor: 'transparent' }}
+                >
+                    +
+                </button>
             </div>
 
             {/* Settings Modal */}
