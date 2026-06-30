@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.git/
+**/.vs/
+**/.vscode/
+**/.idea/
+**/wwwroot/
+*.md
+*.sln.user
+*.csproj.user
+.gitattributes
+LICENSE

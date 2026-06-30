@@ -1,6 +1,6 @@
 import type { Show, User, WatchParty, WatchEntry, WatchPartyMember, CreateShowDto, CreateWatchPartyDto, CreateWatchPartyMemberDto } from "../types/index";
 
-const BASE_URL = 'https://localhost:7202/api';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7202/api';
 
 export async function getShows(): Promise<Show[]> {
     return get<Show[]>('/shows')
