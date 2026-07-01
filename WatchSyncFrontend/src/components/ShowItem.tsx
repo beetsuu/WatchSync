@@ -17,12 +17,10 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
 
     function handlePlusOne(): void {
         const updatedShow = { ...show, currentEpisode: show.currentEpisode + 1 };
-        updateShow(updatedShow);
         onPlusOne(updatedShow);
     }
     function handleMinusOne(): void {
         const updatedShow = { ...show, currentEpisode: show.currentEpisode - 1 };
-        updateShow(updatedShow);
         onMinusOne(updatedShow);
     }
 

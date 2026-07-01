@@ -37,6 +37,7 @@ export interface WatchEntry {
 export interface WatchParty {
     watchPartyId: number;
     name: string;
+    inviteCode: string;
     turnLimit: number;
     currentTurnOrder: number;
     currentTurnCount: number;
@@ -47,6 +48,7 @@ export interface WatchPartyMember {
     watchPartyMemberId: number;
     watchPartyId: number;
     userId: string;
+    displayName: string;
     turnOrder: number;
     joinedAt: string;
 }

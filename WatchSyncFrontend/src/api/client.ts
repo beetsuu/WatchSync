@@ -123,9 +123,26 @@ export async function updateWatchParty(watchParty: WatchParty) {
     });
 }
 
+export async function joinWatchParty(inviteCode: string): Promise<WatchParty> {
+    const response = await fetch(BASE_URL + '/watchparties/join', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ inviteCode })
+    });
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Join failed' }));
+        throw new Error(error.message || 'Failed to join watch party');
+    }
+    return await response.json();
+}
+
+
 async function get<T>(route: string): Promise<T> {
     const response = await fetch(BASE_URL + route, {
         headers: authHeaders()
     });
+    if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+    }
     return await response.json();
 }

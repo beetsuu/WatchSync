@@ -24,9 +24,9 @@ export function useShows(selectedWatchPartyId: number | null) {
         updateShow(updatedShow);
     }
 
-    async function handleAddShow(newShow: CreateShowDto) {
+    async function handleAddShow(newShow: CreateShowDto, addedByUserName: string) {
         const createdShow = await createShow(newShow);
-        setAllShows(prev => [...prev, createdShow]);
+        setAllShows(prev => [...prev, { ...createdShow, addedByUserName }]);
     }
 
     async function handleDelete(showId: number) {

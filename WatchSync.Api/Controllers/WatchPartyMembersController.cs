@@ -25,10 +25,18 @@ namespace WatchSync.Api.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var members = _context.WatchPartyMembers
                 .Where(m => m.WatchParty.WatchPartyMembers.Any(wpm => wpm.UserId == userId))
+                .Select(m => new
+                {
+                    m.WatchPartyMemberId,
+                    m.WatchPartyId,
+                    m.UserId,
+                    DisplayName = m.User.DisplayName,
+                    m.TurnOrder,
+                    m.JoinedAt
+                })
                 .ToList();
             return Ok(members);
         }
-
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {

@@ -4,7 +4,7 @@ export const theme = {
     border: '#2F6F6A',
     accent: '#C78A1E',
     text: '#FFFFFF',
-    textMuted: '#B243C ',
+    textMuted: '#B2A3AC ',
     radius: '12px',
 
     buttonStyle: {

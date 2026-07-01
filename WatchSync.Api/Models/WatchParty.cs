@@ -4,6 +4,7 @@
     {
         public int WatchPartyId { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string InviteCode { get; set; } = string.Empty;
         public int TurnLimit { get; set; }
         public int CurrentTurnOrder { get; set; }
         public int CurrentTurnCount { get; set; }

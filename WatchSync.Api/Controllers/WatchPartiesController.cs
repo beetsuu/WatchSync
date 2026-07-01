@@ -48,6 +48,7 @@ namespace WatchSync.Api.Controllers
             var wp = new WatchParty
             {
                 Name = dto.Name,
+                InviteCode = GenerateInviteCode(),
                 TurnLimit = dto.TurnLimit,
                 CurrentTurnOrder = 1,
                 CurrentTurnCount = 0,
@@ -57,7 +58,6 @@ namespace WatchSync.Api.Controllers
             _context.WatchParties.Add(wp);
             _context.SaveChanges();
 
-            // Creator automatisch als erstes Mitglied hinzufügen
             var member = new WatchPartyMember
             {
                 WatchPartyId = wp.WatchPartyId,
@@ -69,6 +69,43 @@ namespace WatchSync.Api.Controllers
             _context.SaveChanges();
 
             return CreatedAtAction(nameof(GetById), new { id = wp.WatchPartyId }, wp);
+        }
+
+        [HttpPost("join")]
+        public IActionResult Join([FromBody] JoinWatchPartyDto dto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var wp = _context.WatchParties
+                .FirstOrDefault(w => w.InviteCode == dto.InviteCode);
+
+            if (wp == null)
+                return NotFound(new { message = "Invalid invite code" });
+
+            // Prüfen ob User schon Mitglied ist
+            var alreadyMember = _context.WatchPartyMembers
+                .Any(m => m.WatchPartyId == wp.WatchPartyId && m.UserId == userId);
+
+            if (alreadyMember)
+                return BadRequest(new { message = "You are already a member of this watch party" });
+
+            // Nächste TurnOrder berechnen
+            var maxTurnOrder = _context.WatchPartyMembers
+                .Where(m => m.WatchPartyId == wp.WatchPartyId)
+                .Max(m => (int?)m.TurnOrder) ?? 0;
+
+            var member = new WatchPartyMember
+            {
+                WatchPartyId = wp.WatchPartyId,
+                UserId = userId,
+                TurnOrder = maxTurnOrder + 1,
+                JoinedAt = DateTime.UtcNow
+            };
+
+            _context.WatchPartyMembers.Add(member);
+            _context.SaveChanges();
+
+            return Ok(wp);
         }
 
         [HttpPut("{id}")]
@@ -98,6 +135,13 @@ namespace WatchSync.Api.Controllers
             _context.WatchParties.Remove(watchParty);
             _context.SaveChanges();
             return NoContent();
+        }
+
+        private static string GenerateInviteCode()
+        {
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            var random = new Random();
+            return new string(Enumerable.Range(0, 6).Select(_ => chars[random.Next(chars.Length)]).ToArray());
         }
     }
 }
