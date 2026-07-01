@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using WatchSync.Api.Data;
-using WatchSync.Api.Models;
 using WatchSync.Api.DTOs;
-using Microsoft.OpenApi.Validations;
+using WatchSync.Api.Models;
 
 namespace WatchSync.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class WatchPartyMembersController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -21,55 +22,68 @@ namespace WatchSync.Api.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var watchPartyMembers = _context.WatchPartyMembers.ToList();
-            return Ok(watchPartyMembers);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var members = _context.WatchPartyMembers
+                .Where(m => m.WatchParty.WatchPartyMembers.Any(wpm => wpm.UserId == userId))
+                .ToList();
+            return Ok(members);
         }
 
-        // GET api/watchPartyMembers/5
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var watchPartyMember = _context.WatchPartyMembers.FirstOrDefault(wpm => wpm.WatchPartyMemberId == id);
-            if (watchPartyMember == null) return NotFound();
-            return Ok(watchPartyMember);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var member = _context.WatchPartyMembers
+                .FirstOrDefault(m => m.WatchPartyMemberId == id
+                    && m.WatchParty.WatchPartyMembers.Any(wpm => wpm.UserId == userId));
+            if (member == null) return NotFound();
+            return Ok(member);
         }
 
-        // POST api/watchPartyMembers
         [HttpPost]
-        public IActionResult Create([FromBody] CreateWatchPartyMemberDto watchPartyMemberDto)
+        public IActionResult Create([FromBody] CreateWatchPartyMemberDto dto)
         {
-            var watchPartyMember = new WatchPartyMember
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var isMember = _context.WatchPartyMembers.Any(m => m.WatchPartyId == dto.WatchPartyId && m.UserId == userId);
+            if (!isMember) return Forbid();
+
+                var member = new WatchPartyMember
             {
-                WatchPartyId = watchPartyMemberDto.WatchPartyId,
-                UserId = watchPartyMemberDto.UserId,
-                TurnOrder = watchPartyMemberDto.TurnOrder,
+                WatchPartyId = dto.WatchPartyId,
+                UserId = dto.UserId,
+                TurnOrder = dto.TurnOrder,
+                JoinedAt = DateTime.UtcNow
             };
 
-            watchPartyMember.JoinedAt = DateTime.UtcNow;
-            _context.WatchPartyMembers.Add(watchPartyMember);
+            _context.WatchPartyMembers.Add(member);
             _context.SaveChanges();
-            return CreatedAtAction(nameof(GetById), new { id = watchPartyMember.WatchPartyMemberId }, watchPartyMember);
+            return CreatedAtAction(nameof(GetById), new { id = member.WatchPartyMemberId }, member);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] WatchPartyMember updated)
+        public IActionResult Update(int id, [FromBody] CreateWatchPartyMemberDto updated)
         {
-            var watchPartyMember = _context.WatchPartyMembers.FirstOrDefault(wpm => wpm.WatchPartyMemberId == id);
-            if (watchPartyMember == null) return NotFound();
-            watchPartyMember.TurnOrder = updated.TurnOrder;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var member = _context.WatchPartyMembers
+                .FirstOrDefault(m => m.WatchPartyMemberId == id
+                    && m.WatchParty.WatchPartyMembers.Any(wpm => wpm.UserId == userId));
+            if (member == null) return NotFound();
+            member.TurnOrder = updated.TurnOrder;
 
             _context.SaveChanges();
-            return Ok(watchPartyMember);
+            return Ok(member);
         }
 
-
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
+        public IActionResult Delete(int id)
         {
-            var watchPartyMembers = _context.WatchPartyMembers.FirstOrDefault(wpm => wpm.WatchPartyMemberId == id);
-            if (watchPartyMembers == null) return NotFound();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            var member = _context.WatchPartyMembers
+                .FirstOrDefault(m => m.WatchPartyMemberId == id
+                    && m.WatchParty.WatchPartyMembers.Any(wpm => wpm.UserId == userId));
+            if (member == null) return NotFound();
 
-            _context.WatchPartyMembers.Remove(watchPartyMembers);
+            _context.WatchPartyMembers.Remove(member);
             _context.SaveChanges();
             return NoContent();
         }

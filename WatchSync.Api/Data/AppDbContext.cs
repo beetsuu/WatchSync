@@ -1,16 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using WatchSync.Api.Models;
 
 namespace WatchSync.Api.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
 
         }
 
-        public DbSet<User> Users { get; set; }
         public DbSet<Show> Shows { get; set; }
         public DbSet<WatchEntry> WatchEntries { get; set; }
         public DbSet<WatchParty> WatchParties { get; set; }

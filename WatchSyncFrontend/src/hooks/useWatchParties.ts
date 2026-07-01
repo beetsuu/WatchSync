@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWatchParties, updateWatchParty, createWatchParty, createWatchPartyMember, getWatchPartyMembers } from '../api/client';
+import { getWatchParties, updateWatchParty, createWatchParty, getWatchPartyMembers } from '../api/client';
 import type { WatchParty, WatchPartyMember } from '../types';
 
 export function useWatchParty() {
@@ -40,11 +40,8 @@ export function useWatchParty() {
         setWatchParty(updated);
     }
 
-    async function handleCreateWatchParty(name: string, turnLimit: number, userIds: number[]) {
+    async function handleCreateWatchParty(name: string, turnLimit: number) {
         const newWp = await createWatchParty({ name, turnLimit });
-        for (let i = 0; i < userIds.length; i++) {
-            await createWatchPartyMember({ watchPartyId: newWp.watchPartyId, userId: userIds[i], turnOrder: i + 1 });
-        }
         setWatchParty(newWp);
         getWatchPartyMembers().then(data => setMembers(data.sort((a, b) => a.turnOrder - b.turnOrder)));
     }

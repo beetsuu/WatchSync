@@ -4,8 +4,8 @@ import { theme } from "../theme";
 import type { Show } from "../types";
 import Modal from "./Modal";
 
-function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEdit }:
-    { show: Show, onPlusOne: (show: Show) => void, onMinusOne: (show: Show) => void, addedByUserName: string, onDelete: (showid: number) => void, onEdit: (show: Show) => void }) {
+function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
+    { show: Show, onPlusOne: (show: Show) => void, onMinusOne: (show: Show) => void, onDelete: (showid: number) => void, onEdit: (show: Show) => void }) {
 
 
     const [showSettings, setShowSettings] = useState(false);
@@ -41,13 +41,11 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEd
     return (
         <div className="flex flex-col overflow-hidden relative" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
 
-            {/* Bild */}
             <div className="w-full relative" style={{ height: '200px', backgroundColor: theme.border }}>
                 {show.coverUrl
                     ? <img src={show.coverUrl} className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-sm" style={{ color: theme.textMuted }}>no image</div>
                 }
-                {/* Settings Button */}
                 <button
                     onClick={() => setShowSettings(true)}
                     className="absolute top-2 right-2 text-xs px-2 py-1"
@@ -55,18 +53,19 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEd
                 >
                     ⚙
                 </button>
-                {/* Episode Badge */}
                 <div className="absolute bottom-2 left-2 px-2 py-1 text-xs font-mono font-bold"
                     style={{ backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: '6px', color: theme.accent }}>
                     {show.currentEpisode} / {show.totalEpisodes}
                 </div>
             </div>
 
-            {/* Content */}
             <div className="p-3 flex flex-col gap-1">
                 <p className="font-bold text-sm">{show.title}</p>
-                <p className="text-xs" style={{ color: theme.textMuted }}>{addedByUserName}</p>
+                <p className="text-xs" style={{ color: theme.textMuted }}>{show.addedByUserName}</p>
             </div>
+
+
+
 
             <div className="flex border-t" style={{ borderColor: theme.border }}>
                 <button
@@ -88,7 +87,6 @@ function ShowItem({ show, onPlusOne, onMinusOne, addedByUserName, onDelete, onEd
                 </button>
             </div>
 
-            {/* Settings Modal */}
             {showSettings && (
                 <Modal onClose={() => setShowSettings(false)}>
                     <div className="flex flex-col gap-4 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>

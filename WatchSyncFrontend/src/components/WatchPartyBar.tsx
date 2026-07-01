@@ -7,7 +7,7 @@ function WatchPartyBar({ watchParty, currentUser, onPrevUser, onNextUser }: { wa
             <button onClick={onPrevUser} style={theme.buttonStyle}>←</button>
             <div className="flex flex-col items-center">
                 <span style={{ color: theme.textMuted, fontSize: '11px' }}>{watchParty.name}</span>
-                <span className="font-bold text-sm">{currentUser.name}</span>
+                <span className="font-bold text-sm">{currentUser.displayName}</span>
                 <span style={{ fontFamily: 'monospace', color: theme.textMuted, fontSize: '11px' }}>
                     {watchParty.currentTurnCount} / {watchParty.turnLimit}
                 </span>

@@ -4,11 +4,11 @@
     {
         public int WatchPartyMemberId { get; set; }
         public int WatchPartyId { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public int TurnOrder { get; set; }
         public DateTime JoinedAt { get; set; }
 
         public WatchParty WatchParty { get; set; } = null!;
-        public User User { get; set; } = null!;
+        public ApplicationUser User { get; set; } = null!;
     }
 }

@@ -4,7 +4,7 @@
     {
         public int ShowId { get; set; }
         public int WatchPartyId { get; set; }
-        public int AddedByUserId {  get; set; }
+        public string AddedByUserId { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public int TotalEpisodes { get; set; }
         public int CurrentEpisode { get; set; }
@@ -12,7 +12,7 @@
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public WatchParty WatchParty { get; set; } = null!;
-        public User AddedByUser { get; set; } = null!;
+        public ApplicationUser AddedByUser { get; set; } = null!;
 
     }
 }

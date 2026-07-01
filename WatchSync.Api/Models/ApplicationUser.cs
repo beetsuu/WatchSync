@@ -1,13 +1,12 @@
-﻿namespace WatchSync.Api.Models
-{
-    public class User
-    {
-        public int UserId { get; set; }
-        public string Name { get; set; }
-        = string.Empty;
-        public string? AvatarUrl { get; set; }
+﻿using Microsoft.AspNetCore.Identity;
 
-        public DateTime CreatedAt { get; set; }
+namespace WatchSync.Api.Models
+{
+    public class ApplicationUser : IdentityUser
+    {
+        public string DisplayName { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Show> Shows { get; set; } = new List<Show>();
         public ICollection<WatchEntry> WatchEntries { get; set; } = new List<WatchEntry>();

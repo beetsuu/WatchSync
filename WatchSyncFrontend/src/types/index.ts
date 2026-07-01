@@ -1,16 +1,17 @@
 export interface Show {
-    showId: number,
-    watchPartyId: number,
-    addedByUserId: number,
-    title: string,
-    totalEpisodes: number,
-    currentEpisode: number,
-    coverUrl: string | null,
-    createdAt: string
+    showId: number;
+    watchPartyId: number;
+    addedByUserId: string;
+    addedByUserName: string;
+    title: string;
+    totalEpisodes: number;
+    currentEpisode: number;
+    coverUrl: string | null;
+    createdAt: string;
 }
 
 export interface CreateShowDto {
-    addedByUserId: number;
+    watchPartyId: number;
     title: string;
     totalEpisodes: number;
     currentEpisode: number;
@@ -18,36 +19,36 @@ export interface CreateShowDto {
 }
 
 export interface User {
-    userId: number,
-    name: string,
-    avatarUrl: string | null,
-    createdAt: string
+    id: string;
+    email: string;
+    displayName: string;
+    avatarUrl: string | null;
 }
 
 export interface WatchEntry {
-    watchEntryId: number,
-    watchPartyId: number,
-    userId: number,
-    showId: number,
-    partyTurnCountAfter: number,
-    watchedAt: string
+    watchEntryId: number;
+    watchPartyId: number;
+    userId: string;
+    showId: number;
+    partyTurnCountAfter: number;
+    watchedAt: string;
 }
 
 export interface WatchParty {
-    watchPartyId: number,
-    name: string,
-    turnLimit: number,
-    currentTurnOrder: number,
-    currentTurnCount: number,
-    createdAt: string
+    watchPartyId: number;
+    name: string;
+    turnLimit: number;
+    currentTurnOrder: number;
+    currentTurnCount: number;
+    createdAt: string;
 }
 
 export interface WatchPartyMember {
-    watchPartyMemberId: number,
-    watchPartyId: number,
-    userId: number,
-    turnOrder: number,
-    joinedAt: string
+    watchPartyMemberId: number;
+    watchPartyId: number;
+    userId: string;
+    turnOrder: number;
+    joinedAt: string;
 }
 
 export interface CreateWatchPartyDto {
@@ -57,11 +58,11 @@ export interface CreateWatchPartyDto {
 
 export interface CreateWatchPartyMemberDto {
     watchPartyId: number;
-    userId: number;
+    userId: string;
     turnOrder: number;
 }
 
-export interface CreateWatchPartyDto {
-    name: string;
-    turnLimit: number;
+export interface LoginResponse {
+    token: string;
+    user: User;
 }
