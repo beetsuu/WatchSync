@@ -13,5 +13,11 @@ export const theme = {
         borderRadius: '12px',
         padding: '8px 16px',
         fontWeight: 'bold',
+    },
+    darkButton: {
+        backgroundColor: '#1C2F3A',
+        borderRadius: '12px',
+        border: '#2F6F6A, 1px solid',
+        color: '#FFFFFF',
     }
 }

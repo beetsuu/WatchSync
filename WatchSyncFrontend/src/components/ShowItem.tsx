@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { deleteShow, updateShow } from "../api/client";
 import { theme } from "../theme";
+import { IoMdSettings } from "react-icons/io";
 import type { Show } from "../types";
 import Modal from "./Modal";
 
@@ -49,9 +50,9 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
                 <button
                     onClick={() => setShowSettings(true)}
                     className="absolute top-2 right-2 text-xs px-2 py-1"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '6px', color: '#ffffff' }}
+                    style={{ backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: '6px', color: '#ffffff', height: '30px', fontSize: '16px' }}
                 >
-                    ⚙
+                    <IoMdSettings />
                 </button>
                 <div className="absolute bottom-2 left-2 px-2 py-1 text-xs font-mono font-bold"
                     style={{ backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: '6px', color: theme.accent }}>

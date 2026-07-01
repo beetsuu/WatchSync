@@ -11,7 +11,7 @@ function CreateWatchPartyModal({ onAdd, onClose }: { onAdd: (name: string, turnL
     }
 
     return (
-        <div className="flex flex-col gap-4 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
+        <div className="flex flex-col gap-4 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}`, alignItems: "center" }}>
             <h2>Create Watch Party</h2>
             <input placeholder="Name" value={name} onChange={e => setName(e.target.value)} />
             <input type="number" placeholder="Turn Limit" value={turnLimit} onChange={e => setTurnLimit(Number(e.target.value))} />
