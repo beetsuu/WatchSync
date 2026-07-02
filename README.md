@@ -1,26 +1,33 @@
 # WatchSync
 
-A watch party tracker where friends track which anime and series they're watching together, with a turn-based episode system — each person watches 13 episodes before passing the turn.
+A watch party tracker where friends track which movies, anime and series they're watching together, with a turn-based episode system — each person watches a set amount of episodes before passing the turn.
 
-**🔗 Live:** [watchsync.radpour.dev](https://watchsync.radpour.dev)
-**📡 API:** [api.radpour.dev/api](https://api.radpour.dev/api/shows)
+**🔗 Live:** [radpour.dev](https://radpour.dev)
+**📡 API:** [api.radpour.dev](https://api.radpour.dev/api/shows)
+**💻 GitHub:** [github.com/beetsuu/WatchSync](https://github.com/beetsuu/WatchSync)
 
 ## Features
 
-- Add and manage shows with cover images and episode counts
+- JWT authentication with registration and login
+- Create and manage multiple watch parties
+- Invite friends via shareable invite codes
+- Add shows with cover images and episode counts
 - Track current episode with +1/−1 controls
-- Turn-based watch system: 13 episodes per person before switching
-- Watch party groups with member management
-- Turn limit warnings and boundary checks (disabled at 0 and max)
-- User switching via arrow navigation
+- Turn-based watch system with configurable episode limits per turn
+- Automatic turn switching with warnings at the limit
+- Switch between watch parties via dropdown
+- Responsive design for desktop and mobile
 
 ## Tech Stack
 
-**Backend:** ASP.NET Core 8 Web API, Entity Framework Core, PostgreSQL 16
-**Frontend:** React 18, TypeScript, Vite, Tailwind CSS
-**Infrastructure:** Self-hosted on a Linux VPS (Debian) with Docker, deployed via Coolify, HTTPS via Let's Encrypt
+**Backend:** ASP.NET Core 8 Web API, Entity Framework Core, ASP.NET Core Identity, JWT Authentication, PostgreSQL 16
+
+**Frontend:** React, TypeScript, Vite, Tailwind CSS
+
+**Infrastructure:** Self-hosted on a Linux VPS (Debian) with Docker, deployed via Coolify, HTTPS via Let's Encrypt, nginx with SPA routing
 
 ## Architecture
+
 
 ```
 watchsync.radpour.dev (Frontend)
@@ -32,7 +39,8 @@ watchsync.radpour.dev (Frontend)
     PostgreSQL 16 (Database)
 ```
 
-The frontend is a static React build served by nginx with SPA routing. The backend is a containerized ASP.NET Core API using multi-stage Docker builds. Both run on the same server, orchestrated by Coolify, with Traefik as reverse proxy handling TLS termination.
+
+The frontend is a static React build served by nginx with SPA routing. The backend is a containerized ASP.NET Core API using multi-stage Docker builds. Authentication uses ASP.NET Core Identity with JWT tokens. Both run on the same server, orchestrated by Coolify, with Traefik as reverse proxy handling TLS termination.
 
 ## Running Locally
 
@@ -65,8 +73,11 @@ App runs at: `http://localhost:5173`
 
 ## Roadmap
 
-- [ ] Authentication (JWT)
-- [ ] User registration and login
-- [ ] Multi-watch-party selection
+- [x] Authentication (JWT with ASP.NET Core Identity)
+- [x] User registration and login
+- [x] Multi-watch-party selection
+- [x] Invite system with shareable codes
 - [ ] Watch history / activity feed
 - [ ] Loading and error states
+- [ ] Personal default watch party on registration
+- [ ] Member management within watch parties
