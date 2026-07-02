@@ -3,7 +3,6 @@
 A watch party tracker where friends track which movies, anime and series they're watching together, with a turn-based episode system — each person watches a set amount of episodes before passing the turn.
 
 **🔗 Live:** [radpour.dev](https://radpour.dev)
-**📡 API:** [api.radpour.dev](https://api.radpour.dev/api/shows)
 **💻 GitHub:** [github.com/beetsuu/WatchSync](https://github.com/beetsuu/WatchSync)
 
 ## Features
