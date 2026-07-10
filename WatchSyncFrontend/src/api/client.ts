@@ -133,16 +133,26 @@ export async function deleteShow(showId: number) {
 }
 
 export async function updateWatchParty(watchParty: WatchParty) {
-    await fetch(BASE_URL + '/watchParties/' + watchParty.watchPartyId, {
-        method: 'PUT',
-        headers: authHeaders(),
-        body: JSON.stringify({
-            name: watchParty.name,
-            currentTurnCount: watchParty.currentTurnCount,
-            currentTurnOrder: watchParty.currentTurnOrder,
-            turnLimit: watchParty.turnLimit
-        })
-    });
+    const response = await fetch(
+        BASE_URL + '/watchParties/' + watchParty.watchPartyId,
+        {
+            method: 'PUT',
+            headers: authHeaders(),
+            body: JSON.stringify({
+                name: watchParty.name,
+                currentTurnCount: watchParty.currentTurnCount,
+                currentTurnOrder: watchParty.currentTurnOrder,
+                turnLimit: watchParty.turnLimit
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message ?? "Failed to update watch party");
+    }
+
+    return await response.json();
 }
 
 export async function deleteWatchParty(id: number) {
@@ -197,9 +207,7 @@ export async function updateWatchPartyMembers(
         {
             method: 'PUT',
             headers: authHeaders(),
-            body: JSON.stringify({
-                userIds
-            })
+            body: JSON.stringify(userIds)
         }
     );
 
@@ -222,6 +230,7 @@ export async function getShowDetails(id: number) {
         `/shows/details/${id}`
     );
 }
+
 
 async function get<T>(route: string): Promise<T> {
     const response = await fetch(BASE_URL + route, {

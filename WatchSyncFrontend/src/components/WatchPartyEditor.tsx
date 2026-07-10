@@ -3,6 +3,7 @@ import { getWatchPartyMembers, leaveWatchParty, updateWatchPartyMembers } from "
 import { theme } from "../theme";
 import type { WatchPartyMember } from "../types";
 import { useAuth } from "../context/AuthContext";
+import Modal from "./Modal";
 
 function WatchPartyEditor({
     watchParty,
@@ -13,6 +14,9 @@ function WatchPartyEditor({
     const { user } = useAuth();
     const [name, setName] = useState(watchParty.name);
     const [turnLimit, setTurnLimit] = useState(watchParty.turnLimit);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [showSavedModal, setShowSavedModal] = useState(false);
+
 
     const [members, setMembers] = useState<WatchPartyMember[]>([]);
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
@@ -63,6 +67,9 @@ function WatchPartyEditor({
                 selectedMembers
             );
         }
+
+        setShowSavedModal(true);
+
     }
 
     async function handleLeave() {
@@ -175,17 +182,7 @@ function WatchPartyEditor({
 
 
                     <button
-                        onClick={() => {
-                            if (
-                                window.confirm(
-                                    `Delete "${watchParty.name}"?`
-                                )
-                            ) {
-                                onDelete(
-                                    watchParty.watchPartyId
-                                );
-                            }
-                        }}
+                        onClick={() => setShowDeleteConfirm(true)}
                         className="w-full sm:w-auto px-4 py-2 rounded font-bold"
                         style={theme.errorButton}
                     >
@@ -195,6 +192,8 @@ function WatchPartyEditor({
                 </div>
 
             )}
+
+
             {!currentUserIsOwner && (
                 <button
                     onClick={handleLeave}
@@ -204,6 +203,78 @@ function WatchPartyEditor({
                     Leave Watch Party
                 </button>
             )}
+            {showDeleteConfirm && (
+                <Modal onClose={() => setShowDeleteConfirm(false)}>
+                    <div
+                        className="flex flex-col gap-4 p-6 w-80"
+                        style={{
+                            backgroundColor: theme.card,
+                            borderRadius: theme.radius,
+                            border: `1px solid ${theme.border}`
+                        }}
+                    >
+                        <h2>Are you sure?</h2>
+
+                        <p style={{ color: theme.textMuted }}>
+                            This will permanently delete "{watchParty.name}".
+                        </p>
+
+                        <div className="flex gap-2">
+                            <button
+                                style={{
+                                    ...theme.buttonStyle,
+                                    backgroundColor: "#C0392B",
+                                    borderColor: "#C0392B"
+                                }}
+                                onClick={() => {
+                                    onDelete(watchParty.watchPartyId);
+                                    setShowDeleteConfirm(false);
+                                }}
+                            >
+                                Yes, delete
+                            </button>
+
+                            <button
+                                style={theme.buttonStyle}
+                                onClick={() => setShowDeleteConfirm(false)}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </Modal>
+            )}
+            {showSavedModal && (
+                <Modal onClose={() => setShowSavedModal(false)}>
+                    <div
+                        className="flex flex-col gap-4 p-6 w-80 items-center text-center"
+                        style={{
+                            backgroundColor: theme.card,
+                            borderRadius: theme.radius,
+                            border: `1px solid ${theme.border}`
+                        }}
+                    >
+                        <h2 className="font-bold text-lg">
+                            Saved!
+                        </h2>
+
+                        <p
+                            className="text-sm"
+                            style={{ color: theme.textMuted }}
+                        >
+                            Your changes have been saved successfully.
+                        </p>
+
+                        <button
+                            onClick={() => setShowSavedModal(false)}
+                            style={theme.buttonStyle}
+                        >
+                            OK
+                        </button>
+                    </div>
+                </Modal>
+            )}
+
         </div>
     );
 

@@ -6,11 +6,13 @@ import { useAuth } from "../context/AuthContext";
 import { useWatchParty } from "../hooks/useWatchParties";
 import { updateProfile } from "../api/client";
 import WatchPartyEditor from "../components/WatchPartyEditor";
+import Modal from "../components/Modal";
 
 export default function SettingPage() {
     const navigate = useNavigate();
     const { user, setUser, logout } = useAuth();
     const [savingProfile, setSavingProfile] = useState(false);
+    const [showSavedModal, setShowSavedModal] = useState(false);
 
     const {
         watchParties,
@@ -49,7 +51,7 @@ export default function SettingPage() {
                 JSON.stringify(updatedUser)
             );
 
-            alert("Profile updated");
+            setShowSavedModal(true);
         }
         catch (err) {
             console.error(err);
@@ -194,6 +196,37 @@ export default function SettingPage() {
                 TVMaze data is used for show information and images.
                 Data provided by TVMaze API.
             </p>
+
+            {showSavedModal && (
+                <Modal onClose={() => setShowSavedModal(false)}>
+                    <div
+                        className="flex flex-col gap-4 p-6 w-80 items-center text-center"
+                        style={{
+                            backgroundColor: theme.card,
+                            borderRadius: theme.radius,
+                            border: `1px solid ${theme.border}`
+                        }}
+                    >
+                        <h2 className="font-bold text-lg">
+                            Saved!
+                        </h2>
+
+                        <p
+                            className="text-sm"
+                            style={{ color: theme.textMuted }}
+                        >
+                            Your changes have been saved successfully.
+                        </p>
+
+                        <button
+                            onClick={() => setShowSavedModal(false)}
+                            style={theme.buttonStyle}
+                        >
+                            OK
+                        </button>
+                    </div>
+                </Modal>
+            )}
         </div>
     );
 }

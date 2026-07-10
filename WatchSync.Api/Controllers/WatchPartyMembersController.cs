@@ -133,31 +133,24 @@ namespace WatchSync.Api.Controllers
         public IActionResult UpdatePartyMembers(int watchPartyId, [FromBody] List<string> userIds)
         {
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-
             var watchParty = _context.WatchParties
                 .FirstOrDefault(w => w.WatchPartyId == watchPartyId);
 
             if (watchParty == null)
                 return NotFound();
 
-            // Nur Owner darf bearbeiten
             if (watchParty.OwnerId != currentUserId)
                 return Forbid();
-
 
             var currentMembers = _context.WatchPartyMembers
                 .Where(m => m.WatchPartyId == watchPartyId)
                 .ToList();
-
-
-            // Owner immer behalten
+            
             if (!userIds.Contains(watchParty.OwnerId))
             {
                 userIds.Add(watchParty.OwnerId);
             }
 
-
-            // Entfernen
             var removeMembers = currentMembers
                 .Where(m =>
                     m.UserId != watchParty.OwnerId &&
@@ -167,8 +160,6 @@ namespace WatchSync.Api.Controllers
 
             _context.WatchPartyMembers.RemoveRange(removeMembers);
 
-
-            // Hinzufügen
             foreach (var id in userIds)
             {
                 if (!currentMembers.Any(m => m.UserId == id))

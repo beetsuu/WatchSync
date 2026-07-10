@@ -109,7 +109,6 @@ namespace WatchSync.Api.Controllers
 
             user.DisplayName = dto.DisplayName;
             user.Email = dto.Email;
-            user.UserName = dto.Email;
 
             var result = await _userManager.UpdateAsync(user);
 

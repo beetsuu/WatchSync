@@ -113,14 +113,21 @@ namespace WatchSync.Api.Controllers
         public IActionResult Update(int id, [FromBody] CreateWatchPartyDto updated)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
             var watchParty = _context.WatchParties
                 .FirstOrDefault(wp => wp.WatchPartyId == id
                     && wp.WatchPartyMembers.Any(m => m.UserId == userId));
+
             if (watchParty == null) return NotFound();
 
             watchParty.Name = updated.Name;
             watchParty.TurnLimit = updated.TurnLimit;
+
+            watchParty.CurrentTurnCount = updated.CurrentTurnCount;
+            watchParty.CurrentTurnOrder = updated.CurrentTurnOrder;
+
             _context.SaveChanges();
+
             return Ok(watchParty);
         }
 
