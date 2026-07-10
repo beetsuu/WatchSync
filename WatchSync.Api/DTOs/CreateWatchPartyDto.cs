@@ -3,6 +3,6 @@
     public class CreateWatchPartyDto
     {
         public string Name { get; set; } = string.Empty;
-        public int TurnLimit { get; set; } = 13;
+        public int? TurnLimit { get; set; } = null;
     }
 }

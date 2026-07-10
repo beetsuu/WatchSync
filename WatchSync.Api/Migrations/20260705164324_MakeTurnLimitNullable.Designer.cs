@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WatchSync.Api.Data;
@@ -11,9 +12,11 @@ using WatchSync.Api.Data;
 namespace WatchSync.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260705164324_MakeTurnLimitNullable")]
+    partial class MakeTurnLimitNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -324,14 +327,7 @@ namespace WatchSync.Api.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("IsPersonal")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OwnerId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -339,8 +335,6 @@ namespace WatchSync.Api.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("WatchPartyId");
-
-                    b.HasIndex("OwnerId");
 
                     b.ToTable("WatchParties");
                 });
@@ -470,17 +464,6 @@ namespace WatchSync.Api.Migrations
                     b.Navigation("User");
 
                     b.Navigation("WatchParty");
-                });
-
-            modelBuilder.Entity("WatchSync.Api.Models.WatchParty", b =>
-                {
-                    b.HasOne("WatchSync.Api.Models.ApplicationUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("WatchSync.Api.Models.WatchPartyMember", b =>

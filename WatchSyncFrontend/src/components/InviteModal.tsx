@@ -13,6 +13,7 @@ export default function InviteModal({ watchParty, onClose, onJoined }: {
     const [error, setError] = useState('');
     const [joining, setJoining] = useState(false);
 
+
     function handleCopy() {
         if (!watchParty) return;
         navigator.clipboard.writeText(watchParty.inviteCode);
@@ -39,8 +40,7 @@ export default function InviteModal({ watchParty, onClose, onJoined }: {
         <div className="flex flex-col gap-5 p-6 w-80"
             style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
 
-            {/* Obere Hälfte: Dein Code zum Teilen */}
-            {watchParty && (
+            {watchParty && !watchParty.isPersonal && (
                 <>
                     <div className="flex flex-col items-center gap-2">
                         <h2 className="font-bold text-lg">Invite to {watchParty.name}</h2>

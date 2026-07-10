@@ -11,7 +11,14 @@ export function useShows(selectedWatchPartyId: number | null) {
 
     // Nur Shows der ausgewählten WatchParty
     const shows = selectedWatchPartyId
-        ? allShows.filter(s => s.watchPartyId === selectedWatchPartyId)
+        ? allShows
+            .filter(s => s.watchPartyId === selectedWatchPartyId)
+            .sort((a, b) => {
+                const aFinished = a.currentEpisode >= a.totalEpisodes && a.totalEpisodes > 0;
+                const bFinished = b.currentEpisode >= b.totalEpisodes && b.totalEpisodes > 0;
+                if (aFinished !== bFinished) return aFinished ? 1 : -1;
+                return a.showId - b.showId;
+            })
         : [];
 
     function handlePlusOne(updatedShow: Show) {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using WatchSync.Api.Data;
 using WatchSync.Api.DTOs;
 using WatchSync.Api.Models;
+using WatchSync.Api.Utils;
 
 namespace WatchSync.Api.Controllers
 {
@@ -48,13 +49,13 @@ namespace WatchSync.Api.Controllers
             var wp = new WatchParty
             {
                 Name = dto.Name,
-                InviteCode = GenerateInviteCode(),
+                InviteCode = CodeGenerator.GenerateInviteCode(),
                 TurnLimit = dto.TurnLimit,
                 CurrentTurnOrder = 1,
                 CurrentTurnCount = 0,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                OwnerId = userId
             };
-
             _context.WatchParties.Add(wp);
             _context.SaveChanges();
 
@@ -132,16 +133,14 @@ namespace WatchSync.Api.Controllers
                     && wp.WatchPartyMembers.Any(m => m.UserId == userId));
             if (watchParty == null) return NotFound();
 
+            if (watchParty.IsPersonal)
+                return BadRequest(new { message = "This WatchParty can't be deleted." });
+
             _context.WatchParties.Remove(watchParty);
             _context.SaveChanges();
             return NoContent();
         }
 
-        private static string GenerateInviteCode()
-        {
-            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            var random = new Random();
-            return new string(Enumerable.Range(0, 6).Select(_ => chars[random.Next(chars.Length)]).ToArray());
-        }
+
     }
 }

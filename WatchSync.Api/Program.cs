@@ -35,6 +35,7 @@ namespace WatchSync.Api
                 options.Password.RequiredLength = 6;
 
                 options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ‰ˆ¸ƒ÷‹ﬂ";
             })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();

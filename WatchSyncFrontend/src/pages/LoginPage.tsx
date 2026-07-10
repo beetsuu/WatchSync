@@ -6,7 +6,7 @@ import { theme } from '../theme';
 export default function LoginPage() {
     const { login } = useAuth();
     const navigate = useNavigate();
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -17,7 +17,7 @@ export default function LoginPage() {
         setError('');
         setLoading(true);
         try {
-            await login(email, password);
+            await login(username, password);
             navigate('/');
         } catch (err: any) {
             setError(err.message || 'Login failed');
@@ -32,10 +32,10 @@ export default function LoginPage() {
                 <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: theme.accent }}>WatchSync</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
                         required
                         className="px-4 py-2 rounded"
                         style={{ backgroundColor: theme.background, color: theme.text, border: `1px solid ${theme.border}` }}

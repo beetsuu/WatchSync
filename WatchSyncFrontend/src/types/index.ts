@@ -38,10 +38,13 @@ export interface WatchParty {
     watchPartyId: number;
     name: string;
     inviteCode: string;
+    isPersonal: boolean;
     turnLimit: number;
     currentTurnOrder: number;
     currentTurnCount: number;
     createdAt: string;
+    ownerId: string;
+    isOwner: boolean;
 }
 
 export interface WatchPartyMember {
@@ -49,8 +52,10 @@ export interface WatchPartyMember {
     watchPartyId: number;
     userId: string;
     displayName: string;
+    avatarUrl: string | null;
     turnOrder: number;
     joinedAt: string;
+    isOwner: boolean;
 }
 
 export interface CreateWatchPartyDto {
@@ -67,4 +72,8 @@ export interface CreateWatchPartyMemberDto {
 export interface LoginResponse {
     token: string;
     user: User;
+}
+
+export interface UpdateWatchPartyMembersDto {
+    userIds: string[];
 }

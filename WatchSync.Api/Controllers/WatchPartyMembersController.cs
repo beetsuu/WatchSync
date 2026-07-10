@@ -32,7 +32,8 @@ namespace WatchSync.Api.Controllers
                     m.UserId,
                     DisplayName = m.User.DisplayName,
                     m.TurnOrder,
-                    m.JoinedAt
+                    m.JoinedAt,
+                    IsOwner = m.WatchParty.OwnerId == m.UserId
                 })
                 .ToList();
             return Ok(members);
@@ -55,7 +56,7 @@ namespace WatchSync.Api.Controllers
             var isMember = _context.WatchPartyMembers.Any(m => m.WatchPartyId == dto.WatchPartyId && m.UserId == userId);
             if (!isMember) return Forbid();
 
-                var member = new WatchPartyMember
+            var member = new WatchPartyMember
             {
                 WatchPartyId = dto.WatchPartyId,
                 UserId = dto.UserId,
@@ -93,6 +94,137 @@ namespace WatchSync.Api.Controllers
 
             _context.WatchPartyMembers.Remove(member);
             _context.SaveChanges();
+            return NoContent();
+        }
+
+        [HttpGet("party/{watchPartyId}")]
+        public IActionResult GetPartyMembers(int watchPartyId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var isMember = _context.WatchPartyMembers
+                .Any(m => m.WatchPartyId == watchPartyId && m.UserId == userId);
+
+            if (!isMember)
+                return Forbid();
+
+            var ownerId = _context.WatchParties
+                .Where(w => w.WatchPartyId == watchPartyId)
+                .Select(w => w.OwnerId)
+                .First();
+
+            var members = _context.WatchPartyMembers
+                .Where(m => m.WatchPartyId == watchPartyId)
+                .Select(m => new WatchPartyMemberDto
+                {
+                    WatchPartyMemberId = m.WatchPartyMemberId,
+                    UserId = m.UserId,
+                    DisplayName = m.User.DisplayName,
+                    AvatarUrl = m.User.AvatarUrl,
+                    TurnOrder = m.TurnOrder,
+                    IsOwner = m.UserId == ownerId
+                })
+                .ToList();
+
+            return Ok(members);
+        }
+
+        [HttpPut("party/{watchPartyId}")]
+        public IActionResult UpdatePartyMembers(int watchPartyId, [FromBody] List<string> userIds)
+        {
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var watchParty = _context.WatchParties
+                .FirstOrDefault(w => w.WatchPartyId == watchPartyId);
+
+            if (watchParty == null)
+                return NotFound();
+
+            // Nur Owner darf bearbeiten
+            if (watchParty.OwnerId != currentUserId)
+                return Forbid();
+
+
+            var currentMembers = _context.WatchPartyMembers
+                .Where(m => m.WatchPartyId == watchPartyId)
+                .ToList();
+
+
+            // Owner immer behalten
+            if (!userIds.Contains(watchParty.OwnerId))
+            {
+                userIds.Add(watchParty.OwnerId);
+            }
+
+
+            // Entfernen
+            var removeMembers = currentMembers
+                .Where(m =>
+                    m.UserId != watchParty.OwnerId &&
+                    !userIds.Contains(m.UserId)
+                )
+                .ToList();
+
+            _context.WatchPartyMembers.RemoveRange(removeMembers);
+
+
+            // Hinzufügen
+            foreach (var id in userIds)
+            {
+                if (!currentMembers.Any(m => m.UserId == id))
+                {
+                    var maxTurn = currentMembers
+                        .Select(m => m.TurnOrder)
+                        .DefaultIfEmpty(0)
+                        .Max();
+
+                    _context.WatchPartyMembers.Add(new WatchPartyMember
+                    {
+                        WatchPartyId = watchPartyId,
+                        UserId = id,
+                        TurnOrder = maxTurn + 1,
+                        JoinedAt = DateTime.UtcNow
+                    });
+                }
+            }
+
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpDelete("party/{watchPartyId}/leave")]
+        public IActionResult Leave(int watchPartyId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+
+            var watchParty = _context.WatchParties
+                .FirstOrDefault(wp => wp.WatchPartyId == watchPartyId);
+
+            if (watchParty == null)
+                return NotFound();
+
+
+            if (watchParty.OwnerId == userId)
+                return BadRequest(new { message = "Owner can't leave the watch party." });
+
+
+            var member = _context.WatchPartyMembers
+                .FirstOrDefault(m =>
+                    m.WatchPartyId == watchPartyId &&
+                    m.UserId == userId
+                );
+
+
+            if (member == null)
+                return NotFound();
+
+
+            _context.WatchPartyMembers.Remove(member);
+            _context.SaveChanges();
+
+
             return NoContent();
         }
     }

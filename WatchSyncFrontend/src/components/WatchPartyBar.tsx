@@ -11,11 +11,14 @@ function WatchPartyBar({ watchParty, currentTurnName, onPrevUser, onNextUser, me
                     <PiArrowFatLineLeftFill />
                 </button>
             )}
+
             <div className="flex flex-col items-center">
                 <span className="font-bold text-lg">{currentTurnName}</span>
-                <span style={{ fontFamily: 'monospace', color: theme.textMuted, fontSize: '13px' }}>
-                    {watchParty.currentTurnCount} / {watchParty.turnLimit}
-                </span>
+                {watchParty.turnLimit > 0 &&
+                    <span style={{ fontFamily: 'monospace', color: theme.textMuted, fontSize: '13px' }}>
+                        {watchParty.currentTurnCount} / {watchParty.turnLimit}
+                    </span>
+                }
             </div>
             {memberCount > 1 && (
                 <button onClick={onNextUser} style={theme.darkButton} className="h-10 px-4 flex items-center gap-2">

@@ -16,11 +16,11 @@ function authHeaders(): Record<string, string> {
 }
 
 // Auth
-export async function loginUser(email: string, password: string): Promise<LoginResponse> {
+export async function loginUser(username: string, password: string): Promise<LoginResponse> {
     const response = await fetch(BASE_URL + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ username, password })
     });
     if (!response.ok) {
         const error = await response.json().catch(() => ({ message: 'Login failed' }));
@@ -36,9 +36,8 @@ export async function registerUser(email: string, password: string, displayName:
         body: JSON.stringify({ email, password, displayName })
     });
     if (!response.ok) {
-        const errors = await response.json().catch(() => [{ description: 'Registration failed' }]);
-        const message = Array.isArray(errors) ? errors.map((e: any) => e.description).join(', ') : 'Registration failed';
-        throw new Error(message);
+        const error = await response.json().catch(() => ({ message: 'Registration failed' }));
+        throw new Error(error.message || 'Registration failed');
     }
 }
 
@@ -55,8 +54,12 @@ export async function getWatchEntries(): Promise<WatchEntry[]> {
     return get<WatchEntry[]>('/watchEntries');
 }
 
-export async function getWatchPartyMembers(): Promise<WatchPartyMember[]> {
+export async function getAllWatchPartyMembers(): Promise<WatchPartyMember[]> {
     return get<WatchPartyMember[]>('/watchPartyMembers');
+}
+
+export async function getWatchPartyMembers(watchPartyId: number): Promise<WatchPartyMember[]> {
+    return get<WatchPartyMember[]>(`/watchPartyMembers/party/${watchPartyId}`);
 }
 
 export async function createShow(show: CreateShowDto): Promise<Show> {
@@ -78,7 +81,12 @@ export async function createWatchParty(dto: CreateWatchPartyDto): Promise<WatchP
         headers: authHeaders(),
         body: JSON.stringify(dto)
     });
-    return await response.json();
+
+    const data = await response.json();
+
+    console.log("Created WatchParty:", data);
+
+    return data;
 }
 
 export async function createWatchPartyMember(dto: CreateWatchPartyMemberDto): Promise<WatchPartyMember> {
@@ -88,6 +96,20 @@ export async function createWatchPartyMember(dto: CreateWatchPartyMemberDto): Pr
         body: JSON.stringify(dto)
     });
     return await response.json();
+}
+
+export async function leaveWatchParty(id: number) {
+    const response = await fetch(
+        BASE_URL + `/watchPartyMembers/party/${id}/leave`,
+        {
+            method: 'DELETE',
+            headers: authHeaders()
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Failed to leave watch party");
+    }
 }
 
 export async function updateShow(show: Show) {
@@ -123,6 +145,14 @@ export async function updateWatchParty(watchParty: WatchParty) {
     });
 }
 
+export async function deleteWatchParty(id: number) {
+    await fetch(BASE_URL + '/watchParties/' + id, {
+        method: 'DELETE',
+        headers: authHeaders()
+    });
+}
+
+
 export async function joinWatchParty(inviteCode: string): Promise<WatchParty> {
     const response = await fetch(BASE_URL + '/watchparties/join', {
         method: 'POST',
@@ -135,6 +165,50 @@ export async function joinWatchParty(inviteCode: string): Promise<WatchParty> {
     }
     return await response.json();
 }
+
+export async function updateProfile(displayName: string, email: string) {
+    const response = await fetch(
+        BASE_URL + "/auth/profile",
+        {
+            method: "PUT",
+            headers: authHeaders(),
+            body: JSON.stringify({
+                displayName,
+                email
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message ?? "Failed to update profile");
+    }
+
+    return await response.json();
+}
+
+export async function updateWatchPartyMembers(
+    watchPartyId: number,
+    userIds: string[]
+): Promise<void> {
+
+    const response = await fetch(
+        BASE_URL + `/watchPartyMembers/party/${watchPartyId}`,
+        {
+            method: 'PUT',
+            headers: authHeaders(),
+            body: JSON.stringify({
+                userIds
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message ?? "Failed to update members");
+    }
+}
+
 
 
 async function get<T>(route: string): Promise<T> {

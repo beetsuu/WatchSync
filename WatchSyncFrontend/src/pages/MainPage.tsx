@@ -12,6 +12,7 @@ import Modal from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
 import WatchPartyDropdown from '../components/WatchPartyDropdown';
 import { HiOutlineMenu } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 
 export default function MainApp() {
     const { watchParties, setWatchParties, selectedWatchParty, setSelectedWatchParty, members, handleNextUser, handlePrevUser, handleCreateWatchParty, handleTurnCountUp, handleTurnCountDown } = useWatchParty();
@@ -23,6 +24,7 @@ export default function MainApp() {
     const [showTurnWarning, setShowTurnWarning] = useState(false);
     const [menuOpen, setMenuOpen] = useState(false);
     const currentTurnMember = selectedWatchParty ? members.find(m => m.turnOrder === selectedWatchParty.currentTurnOrder) : null;
+    let navigate = useNavigate();
 
     const wrappedHandleAddShow = (show: CreateShowDto) => {
         handleAddShow(show, loggedInUser?.displayName ?? '');
@@ -30,8 +32,17 @@ export default function MainApp() {
 
     function onPlusOne(updatedShow: Show) {
         handlePlusOne(updatedShow);
+
+        if (selectedWatchParty?.isPersonal) {
+            return;
+        }
+
         handleTurnCountUp();
-        if (selectedWatchParty && selectedWatchParty.currentTurnCount + 1 == selectedWatchParty.turnLimit) {
+
+        if (
+            selectedWatchParty &&
+            selectedWatchParty.currentTurnCount + 1 === selectedWatchParty.turnLimit
+        ) {
             setShowTurnWarning(true);
         }
     }
@@ -56,11 +67,19 @@ export default function MainApp() {
                         )}
                     </div>
 
-                    {selectedWatchParty && loggedInUser && (
-                        <div className="order-3 w-full sm:order-2 sm:flex-1 sm:w-auto flex justify-center py-2 sm:py-0">
-                            <WatchPartyBar watchParty={selectedWatchParty} currentTurnName={currentTurnMember?.displayName ?? '?'} onPrevUser={handlePrevUser} onNextUser={handleNextUser} memberCount={members.length} />
-                        </div>
-                    )}
+                    {selectedWatchParty &&
+                        !selectedWatchParty.isPersonal &&
+                        loggedInUser && (
+                            <div className="order-3 w-full sm:order-2 sm:flex-1 sm:w-auto flex justify-center py-2 sm:py-0">
+                                <WatchPartyBar
+                                    watchParty={selectedWatchParty}
+                                    currentTurnName={currentTurnMember?.displayName ?? '?'}
+                                    onPrevUser={handlePrevUser}
+                                    onNextUser={handleNextUser}
+                                    memberCount={members.length}
+                                />
+                            </div>
+                        )}
 
                     <div className="flex-1 flex justify-end order-2 sm:order-3">
                         <div className="relative">
@@ -86,11 +105,22 @@ export default function MainApp() {
                                         style={{ color: theme.text, borderTop: `1px solid ${theme.border}` }}>
                                         + Show
                                     </button>
-                                    <button onClick={() => { setShowInviteModal(true); setMenuOpen(false); }}
+
+                                    <button
+                                        onClick={() => { setShowInviteModal(true); setMenuOpen(false); }}
                                         className="w-full px-4 py-3 text-left hover:opacity-80"
-                                        style={{ color: theme.accent, borderTop: `1px solid ${theme.border}` }}>
+                                        style={{ color: theme.accent, borderTop: `1px solid ${theme.border}` }}
+                                    >
                                         Invite
                                     </button>
+
+
+                                    <button onClick={() => { navigate("/setting") }}
+                                        className="w-full px-4 py-3 text-left hover:opacity-80"
+                                        style={{ color: theme.text, borderTop: `1px solid ${theme.border}` }}>
+                                        Settings
+                                    </button>
+
                                     <button onClick={() => { logout(); setMenuOpen(false); }}
                                         className="w-full px-4 py-3 text-left hover:opacity-80"
                                         style={{ color: theme.text, borderTop: `1px solid ${theme.border}` }}>
@@ -122,6 +152,17 @@ export default function MainApp() {
             {!selectedWatchParty && watchParties.length === 0 && (
                 <div className="flex flex-col items-center gap-4 p-8">
                     <p>No watch parties yet — create one!</p>
+                    <div
+                        className="flex center-0 top-12 w-50 overflow-hidden z-50"
+                        style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}
+                    >
+
+                        <button onClick={() => { setShowWpModal(true); setMenuOpen(false); }}
+                            className="w-50 px-4 py-3 text-center hover:opacity-80"
+                            style={{ color: theme.text }}>
+                            + Watch Party
+                        </button>
+                    </div>
                 </div>
             )}
 

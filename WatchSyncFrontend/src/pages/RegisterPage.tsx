@@ -33,7 +33,7 @@ export default function RegisterPage() {
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                     <input
                         type="text"
-                        placeholder="displayName"
+                        placeholder="Username"
                         value={displayName}
                         onChange={e => setDisplayName(e.target.value)}
                         required

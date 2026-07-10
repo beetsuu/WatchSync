@@ -14,6 +14,7 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
     const [editEpisodes, setEditEpisodes] = useState(show.totalEpisodes);
     const [editCoverUrl, setEditCoverUrl] = useState(show.coverUrl ?? '');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const isFinished = show.currentEpisode >= show.totalEpisodes && show.totalEpisodes > 0;
 
     function handlePlusOne(): void {
         const updatedShow = { ...show, currentEpisode: show.currentEpisode + 1 };
@@ -38,9 +39,19 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
     }
 
     return (
-        <div className="flex flex-col overflow-hidden relative" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
-
+        <div className="flex flex-col overflow-hidden relative transition-opacity" style={{
+            backgroundColor: theme.card,
+            borderRadius: theme.radius,
+            border: isFinished ? `1px solid ${theme.accent}` : `1px solid ${theme.border}`,
+            opacity: isFinished ? 0.75 : 1
+        }}>
             <div className="w-full relative" style={{ height: '200px', backgroundColor: theme.border }}>
+                {isFinished && (
+                    <div className="absolute top-2 left-2 px-2 py-1 text-xs font-bold"
+                        style={{ backgroundColor: theme.darkButton.backgroundColor, borderRadius: '6px', color: '#ffffff' }}>
+                        ✓ Done
+                    </div>
+                )}
                 {show.coverUrl
                     ? <img src={show.coverUrl} className="w-full h-full object-cover" />
                     : <div className="w-full h-full flex items-center justify-center text-sm" style={{ color: theme.textMuted }}>no image</div>
@@ -53,7 +64,7 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }:
                     <IoMdSettings />
                 </button>
                 <div className="absolute bottom-2 left-2 px-2 py-1 text-xs font-mono font-bold"
-                    style={{ backgroundColor: 'rgba(0,0,0,0.7)', borderRadius: '6px', color: theme.accent }}>
+                    style={{ backgroundColor: 'rgba(0,0,0,0.8)', borderRadius: '6px', color: theme.accent }}>
                     {show.currentEpisode} / {show.totalEpisodes}
                 </div>
             </div>

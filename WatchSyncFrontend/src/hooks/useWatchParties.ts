@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWatchParties, updateWatchParty, createWatchParty, getWatchPartyMembers } from '../api/client';
+import { getWatchParties, updateWatchParty, createWatchParty, getAllWatchPartyMembers, deleteWatchParty, leaveWatchParty } from '../api/client';
 import type { WatchParty, WatchPartyMember } from '../types';
 
 export function useWatchParty() {
@@ -9,7 +9,7 @@ export function useWatchParty() {
 
     useEffect(() => {
         getWatchParties().then(data => setWatchParties(data));
-        getWatchPartyMembers().then(data => setAllMembers(data.sort((a, b) => a.turnOrder - b.turnOrder)));
+        getAllWatchPartyMembers().then(data => setAllMembers(data.sort((a, b) => a.turnOrder - b.turnOrder)));
     }, []);
 
     const members = selectedWatchParty
@@ -48,10 +48,59 @@ export function useWatchParty() {
 
     async function handleCreateWatchParty(name: string, turnLimit: number) {
         const newWp = await createWatchParty({ name, turnLimit });
+
         setWatchParties(prev => [...prev, newWp]);
+
+        const data = await getAllWatchPartyMembers();
+
+        setAllMembers(
+            data.sort((a, b) => a.turnOrder - b.turnOrder)
+        );
+
         setSelectedWatchParty(newWp);
-        getWatchPartyMembers().then(data => setAllMembers(data.sort((a, b) => a.turnOrder - b.turnOrder)));
     }
 
-    return { watchParties, setWatchParties, selectedWatchParty, setSelectedWatchParty, members, handleTurnCountUp, handleTurnCountDown, handleNextUser, handlePrevUser, handleCreateWatchParty };
+    async function handleEditWatchParty(updatedWP: WatchParty) {
+        await updateWatchParty(updatedWP);
+        setWatchParties(prev =>
+            prev.map(wp =>
+                wp.watchPartyId === updatedWP.watchPartyId
+                    ? updatedWP
+                    : wp
+            )
+        );
+        if (selectedWatchParty?.watchPartyId === updatedWP.watchPartyId) {
+            setSelectedWatchParty(updatedWP);
+        }
+    }
+
+    async function handleDeleteWatchParty(id: number) {
+        await deleteWatchParty(id);
+
+        setWatchParties(prev =>
+            prev.filter(wp => wp.watchPartyId !== id)
+        );
+
+        if (selectedWatchParty?.watchPartyId === id) {
+            setSelectedWatchParty(null);
+        }
+    }
+
+    async function handleLeaveWatchParty(id: number) {
+        await leaveWatchParty(id);
+
+        setWatchParties(prev =>
+            prev.filter(wp => wp.watchPartyId !== id)
+        );
+
+        setAllMembers(prev =>
+            prev.filter(m => m.watchPartyId !== id)
+        );
+
+        if (selectedWatchParty?.watchPartyId === id) {
+            setSelectedWatchParty(null);
+        }
+    }
+
+    return { watchParties, setWatchParties, selectedWatchParty, setSelectedWatchParty, members, handleTurnCountUp, handleTurnCountDown, handleNextUser, handlePrevUser, handleCreateWatchParty, handleEditWatchParty, handleDeleteWatchParty, handleLeaveWatchParty };
 }

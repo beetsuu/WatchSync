@@ -4,6 +4,7 @@ import { loginUser as apiLogin } from '../api/client';
 
 interface AuthContextType {
     user: User | null;
+    setUser: (user: User) => void;
     token: string | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
@@ -29,8 +30,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
     }, []);
 
-    async function login(email: string, password: string) {
-        const response = await apiLogin(email, password);
+    async function login(username: string, password: string) {
+        const response = await apiLogin(username, password);
         setToken(response.token);
         setUser(response.user);
         sessionStorage.setItem('token', response.token);
@@ -45,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout, isLoggedIn: !!token, isLoading }}>
+        <AuthContext.Provider value={{ user, setUser, token, login, logout, isLoggedIn: !!token, isLoading }}>
             {children}
         </AuthContext.Provider>
     );

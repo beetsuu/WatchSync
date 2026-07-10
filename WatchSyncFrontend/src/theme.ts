@@ -19,5 +19,12 @@ export const theme = {
         borderRadius: '12px',
         border: '#2F6F6A, 1px solid',
         color: '#FFFFFF',
+    },
+    errorButton: {
+        backgroundColor: '#af0505',
+        color: '#ffffff',
+        borderRadius: '12px',
+        padding: '8px 16px',
+        fontWeight: 'bold',
     }
 }
