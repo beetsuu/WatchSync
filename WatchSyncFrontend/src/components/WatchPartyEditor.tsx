@@ -24,16 +24,20 @@ function WatchPartyEditor({
     useEffect(() => {
         getWatchPartyMembers(watchParty.watchPartyId)
             .then(data => {
-                setMembers(data);
+                const sortedMembers = [...data].sort((a, b) => {
+                    if (a.isOwner === b.isOwner) return 0;
+                    return a.isOwner ? -1 : 1;
+                });
+
+                setMembers(sortedMembers);
 
                 setSelectedMembers(
-                    data.map(m => m.userId)
+                    sortedMembers.map(m => m.userId)
                 );
             })
             .catch(console.error);
 
     }, [watchParty.watchPartyId]);
-
 
     function toggleMember(userId: string) {
         setSelectedMembers(prev =>
@@ -94,7 +98,7 @@ function WatchPartyEditor({
                 value={name}
                 disabled={!currentUserIsOwner}
                 onChange={(e) => setName(e.target.value)}
-                className="px-3 py-2 rounded bg-black/30 outline-none"
+                className="w-full px-3 py-2 rounded bg-black/30 outline-none"
             />
 
 
@@ -106,7 +110,7 @@ function WatchPartyEditor({
                 onChange={(e) =>
                     setTurnLimit(Number(e.target.value))
                 }
-                className="px-3 py-2 rounded bg-black/30 outline-none"
+                className="w-full px-3 py-2 rounded bg-black/30 outline-none"
             />
 
 
@@ -121,8 +125,25 @@ function WatchPartyEditor({
 
                     <label
                         key={member.userId}
-                        className="flex items-center gap-2"
+                        className="flex items-center justify-between gap-2"
                     >
+
+                        <span >
+
+                            {member.displayName}
+
+                            {member.isOwner && (
+                                <span
+                                    style={{
+                                        color: theme.accent
+                                    }}
+                                >
+                                    {" "}(Owner)
+                                </span>
+                            )}
+
+                        </span>
+
 
                         {currentUserIsOwner && !member.isOwner && (
                             <input
@@ -134,36 +155,20 @@ function WatchPartyEditor({
                             />
                         )}
 
-
-                        <span>
-                            {member.displayName}
-
-                            {member.isOwner && (
-                                <span
-                                    style={{
-                                        color: theme.accent
-                                    }}
-                                >
-                                    {" "}Owner
-                                </span>
-                            )}
-
-                        </span>
-
                     </label>
 
                 ))}
 
             </div>
 
-
             {currentUserIsOwner && (
 
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
 
                     <button
                         style={theme.buttonStyle}
                         onClick={handleSave}
+                        className="w-full sm:w-auto"
                     >
                         Save
                     </button>
@@ -171,7 +176,6 @@ function WatchPartyEditor({
 
                     <button
                         onClick={() => {
-
                             if (
                                 window.confirm(
                                     `Delete "${watchParty.name}"?`
@@ -181,9 +185,8 @@ function WatchPartyEditor({
                                     watchParty.watchPartyId
                                 );
                             }
-
                         }}
-                        className="px-4 py-2 rounded font-bold"
+                        className="w-full sm:w-auto px-4 py-2 rounded font-bold"
                         style={theme.errorButton}
                     >
                         Delete
@@ -195,13 +198,12 @@ function WatchPartyEditor({
             {!currentUserIsOwner && (
                 <button
                     onClick={handleLeave}
-                    className="px-4 py-2 rounded font-bold"
+                    className="w-full px-4 py-2 rounded font-bold"
                     style={theme.errorButton}
                 >
                     Leave Watch Party
                 </button>
             )}
-
         </div>
     );
 

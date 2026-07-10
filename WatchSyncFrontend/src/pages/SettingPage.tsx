@@ -69,8 +69,11 @@ export default function SettingPage() {
             }}
         >
             <div
-                className="flex items-center justify-between px-6 py-4 border-b"
-                style={{ borderColor: theme.border }}
+                className="sticky top-0 z-40 flex items-center justify-between px-4 sm:px-6 py-3 border-b"
+                style={{
+                    borderColor: theme.border,
+                    backgroundColor: theme.background
+                }}
             >
                 <button
                     onClick={() => navigate(-1)}
@@ -84,8 +87,7 @@ export default function SettingPage() {
                 <div className="w-10" />
             </div>
 
-            <div className="max-w-xl mx-auto mt-8 px-4 flex flex-col gap-4">
-
+            <div className="w-full max-w-xl mx-auto mt-6 sm:mt-8 px-3 sm:px-4 flex flex-col gap-4">
                 {/* PROFILE */}
                 <div
                     className="rounded-lg overflow-hidden"
@@ -122,7 +124,7 @@ export default function SettingPage() {
                             <button
                                 onClick={handleSaveProfile}
                                 disabled={savingProfile}
-                                className="self-start px-4 py-2 rounded font-bold"
+                                className="w-full sm:w-auto px-4 py-2 rounded font-bold"
                                 style={{
                                     backgroundColor: theme.accent,
                                     color: theme.background
@@ -154,7 +156,7 @@ export default function SettingPage() {
                     </button>
 
                     {openSection === "watchparties" && (
-                        <div className="px-4 pb-4 flex flex-col gap-4">
+                        <div className="px-3 sm:px-4 pb-4 flex flex-col gap-4">
 
                             {watchParties.map((wp) => (
                                 <WatchPartyEditor
@@ -174,7 +176,7 @@ export default function SettingPage() {
                         logout();
                         navigate("/login");
                     }}
-                    className="w-full text-left px-4 py-3 rounded-lg font-semibold"
+                    className="w-full text-left px-4 py-3 rounded-lg font-semibold mt-2"
                     style={{
                         backgroundColor: theme.card,
                         color: theme.accent,
@@ -185,6 +187,13 @@ export default function SettingPage() {
                 </button>
 
             </div>
+
+            <p
+                className="text-xs text-center opacity-50 mt-8 px-4 pb-6"
+            >
+                TVMaze data is used for show information and images.
+                Data provided by TVMaze API.
+            </p>
         </div>
     );
 }

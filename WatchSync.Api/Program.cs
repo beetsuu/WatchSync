@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using WatchSync.Api.Data;
 using WatchSync.Api.Models;
+using WatchSync.Api.Services;
 
 namespace WatchSync.Api
 {
@@ -76,6 +77,8 @@ namespace WatchSync.Api
                           .AllowAnyMethod();
                 });
             });
+
+            builder.Services.AddHttpClient<TvMazeService>();
 
             var app = builder.Build();
 

@@ -9,6 +9,8 @@
         public int TotalEpisodes { get; set; }
         public int CurrentEpisode { get; set; }
         public string? CoverUrl { get; set; }
+        public int? TvMazeId { get; set; }
+        public int? Runtime { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public WatchParty WatchParty { get; set; } = null!;

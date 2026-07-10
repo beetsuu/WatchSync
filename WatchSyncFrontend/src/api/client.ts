@@ -1,4 +1,4 @@
-import type { Show, WatchParty, WatchEntry, WatchPartyMember, CreateShowDto, CreateWatchPartyDto, CreateWatchPartyMemberDto, LoginResponse } from "../types/index";
+import type { Show, WatchParty, WatchEntry, WatchPartyMember, CreateShowDto, CreateWatchPartyDto, CreateWatchPartyMemberDto, LoginResponse, ShowSearchResult, ShowDetails } from "../types/index";
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://localhost:7202/api';
 
@@ -210,6 +210,18 @@ export async function updateWatchPartyMembers(
 }
 
 
+export async function searchShows(query: string) {
+    return get<ShowSearchResult[]>(
+        `/shows/search?query=${encodeURIComponent(query)}`
+    );
+}
+
+
+export async function getShowDetails(id: number) {
+    return get<ShowDetails>(
+        `/shows/details/${id}`
+    );
+}
 
 async function get<T>(route: string): Promise<T> {
     const response = await fetch(BASE_URL + route, {

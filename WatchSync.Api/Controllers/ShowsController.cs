@@ -1,9 +1,10 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using WatchSync.Api.Data;
 using WatchSync.Api.DTOs;
 using WatchSync.Api.Models;
+using WatchSync.Api.Services;
 
 namespace WatchSync.Api.Controllers
 {
@@ -105,6 +106,32 @@ namespace WatchSync.Api.Controllers
             _context.Shows.Remove(show);
             _context.SaveChanges();
             return NoContent();
+        }
+
+
+        [HttpGet("search")]
+        public async Task<IActionResult> Search( string query,[FromServices] TvMazeService service)
+        {
+            if (string.IsNullOrWhiteSpace(query) || query.Length < 3)
+            {
+                return BadRequest("Search query must contain at least 3 characters.");
+            }
+
+            var result = await service.Search(query);
+
+            return Ok(result);
+        }
+
+
+        [HttpGet("details/{externalId}")]
+        public async Task<IActionResult> Details(int externalId, [FromServices] TvMazeService service)
+        {
+            var result = await service.GetDetails(externalId);
+
+            if (result == null)
+                return NotFound();
+
+            return Ok(result);
         }
     }
 }

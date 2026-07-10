@@ -77,3 +77,16 @@ export interface LoginResponse {
 export interface UpdateWatchPartyMembersDto {
     userIds: string[];
 }
+
+export interface ShowSearchResult {
+    externalId: number;
+    title: string;
+    coverUrl: string | null;
+}
+
+
+export interface ShowDetails {
+    title: string;
+    coverUrl: string | null;
+    totalEpisodes: number;
+}
