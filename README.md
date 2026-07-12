@@ -76,7 +76,14 @@ App runs at: `http://localhost:5173`
 - [x] User registration and login
 - [x] Multi-watch-party selection
 - [x] Invite system with shareable codes
+- [x] Personal default watch party on registration
+- [x] Member management within watch parties
 - [ ] Watch history / activity feed
 - [ ] Loading and error states
-- [ ] Personal default watch party on registration
-- [ ] Member management within watch parties
+
+
+## Credits
+
+Show metadata and images are provided by the TVMaze API.
+
+https://www.tvmaze.com/api
