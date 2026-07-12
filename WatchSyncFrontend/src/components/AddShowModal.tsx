@@ -183,19 +183,24 @@ function AddShowModal({
 
             )}
 
-            <div className="flex gap-2">
-
+            <div className=" flex flex-col gap-2 w-full relative">
                 <button
                     onClick={handleAdd}
-                    style={theme.buttonStyle}
-                >
+                    className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                    style={{
+                        backgroundColor: theme.accent,
+                        color: theme.background
+                    }}>
                     Add
                 </button>
 
                 <button
                     onClick={onClose}
-                    style={theme.buttonStyle}
-                >
+                    className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                    style={{
+                        backgroundColor: theme.errorButton.backgroundColor,
+                        color: theme.errorButton.color
+                    }}>
                     Cancel
                 </button>
 

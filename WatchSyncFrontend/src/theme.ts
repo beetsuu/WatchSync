@@ -21,8 +21,8 @@ export const theme = {
         color: '#FFFFFF',
     },
     errorButton: {
-        backgroundColor: '#af0505',
-        color: '#ffffff',
+        backgroundColor: '#9e0909',
+        color: '#eeeeee',
         borderRadius: '12px',
         padding: '8px 16px',
         fontWeight: 'bold',

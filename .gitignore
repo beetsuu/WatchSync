@@ -401,3 +401,5 @@ FodyWeavers.xsd
 *.sln.iml
 **/appsettings.Development.json
 **/launchSettings.json
+
+wwwroot/uploads/

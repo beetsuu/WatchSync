@@ -99,12 +99,12 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }: ShowItemPro
 
     return (
         <div
-            className="flex flex-col overflow-hidden relative transition-opacity"
+            className="flex flex-col overflow-hidden relative"
             style={{
                 backgroundColor: theme.card,
                 borderRadius: theme.radius,
                 border: isFinished ? `1px solid ${theme.accent}` : `1px solid ${theme.border}`,
-                opacity: isFinished ? 0.75 : 1,
+                opacity: isFinished && !showSettings ? 0.75 : 1,
             }}
         >
             <div className="w-full relative" style={{ height: "200px", backgroundColor: theme.border }}>
@@ -139,7 +139,7 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }: ShowItemPro
             </div>
 
             <div className="p-3 flex flex-col gap-1">
-                <p className="font-bold text-sm">{show.title}</p>
+                <p className="font-bold text-sm truncate">{show.title}</p>
                 <p className="text-xs" style={{ color: theme.textMuted }}>{show.addedByUserName}</p>
             </div>
 
@@ -165,24 +165,36 @@ function ShowItem({ show, onPlusOne, onMinusOne, onDelete, onEdit }: ShowItemPro
 
             {showSettings && (
                 <Modal onClose={() => setShowSettings(false)}>
-                    <div className="flex flex-col gap-4 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
+                    <div className="flex flex-col gap-3 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
                         <h2>Edit Show</h2>
                         <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="Title" />
                         <input type="number" value={editEpisodes} onChange={(e) => setEditEpisodes(Number(e.target.value))} placeholder="Total Episodes" />
                         <input value={editCoverUrl} onChange={(e) => setEditCoverUrl(e.target.value)} placeholder="Cover URL" />
-                        <button style={theme.buttonStyle} onClick={handleSave}>Save</button>
-                        <button style={{ ...theme.buttonStyle, backgroundColor: "#C0392B", borderColor: "#C0392B" }} onClick={() => setShowDeleteConfirm(true)}>Delete</button>
+
+                        <div className=" flex flex-col gap-2 w-full relative">
+                            <button className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                                style={{
+                                    backgroundColor: theme.accent,
+                                    color: theme.background
+                                }} onClick={handleSave}>Save</button>
+                            <button
+                                className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                                style={{
+                                    backgroundColor: theme.errorButton.backgroundColor,
+                                    color: theme.errorButton.color
+                                }} onClick={() => setShowDeleteConfirm(true)}> Delete</button>
+                        </div>
                     </div>
                 </Modal>
             )}
 
             {showDeleteConfirm && (
                 <Modal onClose={() => setShowDeleteConfirm(false)}>
-                    <div className="flex flex-col gap-4 p-6 w-80" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
+                    <div className="flex flex-col gap-4 p-6 w-80 rounded-lg" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
                         <h2>Are you sure?</h2>
                         <p style={{ color: theme.textMuted }}>This will permanently delete "{show.title}".</p>
                         <div className="flex gap-2">
-                            <button style={{ ...theme.buttonStyle, backgroundColor: "#C0392B" }} onClick={handleDelete}>Yes, delete</button>
+                            <button style={{ ...theme.errorButton, backgroundColor: theme.errorButton.backgroundColor }} onClick={handleDelete}>Yes, delete</button>
                             <button style={theme.buttonStyle} onClick={() => setShowDeleteConfirm(false)}>Cancel</button>
                         </div>
                     </div>

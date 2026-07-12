@@ -176,7 +176,7 @@ export async function joinWatchParty(inviteCode: string): Promise<WatchParty> {
     return await response.json();
 }
 
-export async function updateProfile(displayName: string, email: string) {
+export async function updateProfile(displayName: string, email: string, avatarUrl: string) {
     const response = await fetch(
         BASE_URL + "/auth/profile",
         {
@@ -184,7 +184,8 @@ export async function updateProfile(displayName: string, email: string) {
             headers: authHeaders(),
             body: JSON.stringify({
                 displayName,
-                email
+                email,
+                avatarUrl
             })
         }
     );
@@ -192,6 +193,29 @@ export async function updateProfile(displayName: string, email: string) {
     if (!response.ok) {
         const error = await response.json().catch(() => null);
         throw new Error(error?.message ?? "Failed to update profile");
+    }
+
+    return await response.json();
+}
+
+export async function uploadAvatar(file: File) {
+    const formData = new FormData();
+
+    formData.append("file", file);
+
+    const response = await fetch(
+        BASE_URL + "/auth/avatar",
+        {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            },
+            body: formData
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Avatar upload failed");
     }
 
     return await response.json();
@@ -231,6 +255,16 @@ export async function getShowDetails(id: number) {
     );
 }
 
+
+export function getAvatarUrl(url?: string) {
+    if (!url) return "/default-avatar.png";
+
+    if (url.startsWith("http")) {
+        return url;
+    }
+
+    return BASE_URL.replace("/api", "") + url;
+}
 
 async function get<T>(route: string): Promise<T> {
     const response = await fetch(BASE_URL + route, {

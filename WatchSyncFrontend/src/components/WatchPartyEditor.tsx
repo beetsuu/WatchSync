@@ -170,12 +170,15 @@ function WatchPartyEditor({
 
             {currentUserIsOwner && (
 
-                <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col gap-2">
 
                     <button
-                        style={theme.buttonStyle}
                         onClick={handleSave}
-                        className="w-full sm:w-auto"
+                        className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                        style={{
+                            backgroundColor: theme.accent,
+                            color: theme.background
+                        }}
                     >
                         Save
                     </button>
@@ -184,7 +187,10 @@ function WatchPartyEditor({
                     <button
                         onClick={() => setShowDeleteConfirm(true)}
                         className="w-full sm:w-auto px-4 py-2 rounded font-bold"
-                        style={theme.errorButton}
+                        style={{
+                            backgroundColor: theme.errorButton.backgroundColor,
+                            color: theme.errorButton.color
+                        }}
                     >
                         Delete
                     </button>

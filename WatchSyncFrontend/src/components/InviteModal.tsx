@@ -62,15 +62,14 @@ export default function InviteModal({ watchParty, onClose, onJoined }: {
                     <button onClick={handleCopy} style={theme.buttonStyle} className="w-full">
                         {copied ? '✓ Copied!' : 'Copy Code'}
                     </button>
+
+                    <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px" style={{ backgroundColor: theme.border }} />
+                        <span style={{ color: theme.textMuted, fontSize: '13px' }}>or join one</span>
+                        <div className="flex-1 h-px" style={{ backgroundColor: theme.border }} />
+                    </div>
                 </>
             )}
-
-            {/* Trenner */}
-            <div className="flex items-center gap-3">
-                <div className="flex-1 h-px" style={{ backgroundColor: theme.border }} />
-                <span style={{ color: theme.textMuted, fontSize: '13px' }}>or join one</span>
-                <div className="flex-1 h-px" style={{ backgroundColor: theme.border }} />
-            </div>
 
             {/* Untere Hälfte: Code eingeben zum Beitreten */}
             <div className="flex flex-col items-center gap-2">
@@ -88,15 +87,16 @@ export default function InviteModal({ watchParty, onClose, onJoined }: {
                         fontSize: '18px'
                     }}
                 />
+                <div></div>
                 {error && <p style={{ color: '#ff6b6b', fontSize: '14px' }}>{error}</p>}
                 <button onClick={handleJoin} disabled={joining} style={theme.buttonStyle} className="w-full">
                     {joining ? 'Joining...' : 'Join Watch Party'}
                 </button>
-            </div>
 
-            <button onClick={onClose} className="w-full py-1 hover:opacity-80" style={{ color: theme.textMuted }}>
-                Close
-            </button>
+                <button onClick={onClose} style={theme.errorButton} className="w-full">
+                    Close
+                </button>
+            </div>
         </div>
     );
 }

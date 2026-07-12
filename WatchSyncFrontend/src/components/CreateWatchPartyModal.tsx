@@ -84,16 +84,24 @@ function CreateWatchPartyModal({
                 </div>
             )}
 
-            <div className="flex gap-2">
+            <div className=" flex flex-col gap-2 w-full relative">
                 <button
-                    style={theme.buttonStyle}
+                    className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                    style={{
+                        backgroundColor: theme.accent,
+                        color: theme.background
+                    }}
                     onClick={handleCreate}
                 >
                     Create
                 </button>
 
                 <button
-                    style={theme.buttonStyle}
+                    className="w-full sm:w-auto px-4 py-2 rounded font-bold"
+                    style={{
+                        backgroundColor: theme.errorButton.backgroundColor,
+                        color: theme.errorButton.color
+                    }}
                     onClick={onClose}
                 >
                     Cancel

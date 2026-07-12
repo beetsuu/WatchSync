@@ -109,6 +109,7 @@ namespace WatchSync.Api.Controllers
 
             user.DisplayName = dto.DisplayName;
             user.Email = dto.Email;
+            user.AvatarUrl = dto.AvatarUrl;
 
             var result = await _userManager.UpdateAsync(user);
 
@@ -120,6 +121,65 @@ namespace WatchSync.Api.Controllers
                 id = user.Id,
                 email = user.Email,
                 displayName = user.DisplayName,
+                avatarUrl = user.AvatarUrl
+            });
+        }
+
+        [Authorize]
+        [HttpPost("avatar")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadAvatar(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { message = "No file uploaded" });
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+                return NotFound();
+
+            var allowedExtensions = new[]{ ".png",".jpg",".jpeg",".webp"};
+
+            var extension = Path.GetExtension(file.FileName).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+                return BadRequest(new { message = "Invalid file type" });
+
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest(new { message = "File too large" });
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+
+            var uploadPath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                "avatars"
+            );
+
+            Directory.CreateDirectory(uploadPath);
+
+            var filePath = Path.Combine(
+                uploadPath,
+                fileName
+            );
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            user.AvatarUrl = $"/uploads/avatars/{fileName}";
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new
+            {
                 avatarUrl = user.AvatarUrl
             });
         }

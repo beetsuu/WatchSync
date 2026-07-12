@@ -11,7 +11,6 @@ import type { CreateShowDto, Show } from '../types';
 import Modal from '../components/Modal';
 import { useAuth } from '../context/AuthContext';
 import WatchPartyDropdown from '../components/WatchPartyDropdown';
-import { HiOutlineMenu } from 'react-icons/hi';
 import { useNavigate } from 'react-router-dom';
 
 export default function MainApp() {
@@ -57,7 +56,7 @@ export default function MainApp() {
             <div className="sticky top-0 z-40" style={{ borderBottom: `2px solid ${theme.accent}`, backgroundColor: theme.background }}>
                 <div className="flex flex-wrap items-center px-6 py-3">
                     <div className="flex-1 flex items-center gap-2">
-                        <h1 className="text-sm font-bold hidden sm:block">WatchSync</h1>
+                        <h1 className="text-md font-bold hidden sm:block">WatchSync</h1>
                         {selectedWatchParty && (
                             <WatchPartyDropdown
                                 watchParties={watchParties}
@@ -83,12 +82,18 @@ export default function MainApp() {
 
                     <div className="flex-1 flex justify-end order-2 sm:order-3">
                         <div className="relative">
-                            <button onClick={() => setMenuOpen(!menuOpen)}
-                                className="h-10 px-4 flex items-center gap-2 font-medium"
-                                style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}`, fontSize: '16px' }}>
-                                <span>Menu</span>
-                                <HiOutlineMenu size={18} />
-                            </button>
+                            {selectedWatchParty &&
+                                <button onClick={() => setMenuOpen(!menuOpen)}
+                                    className="h-10 px-5 flex items-center gap-3 font-medium"
+                                    style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}`, fontSize: '16px' }}>
+                                    <span>{loggedInUser?.displayName}</span>
+                                    <img
+                                        src={loggedInUser?.avatarUrl || "/default-avatar.png"}
+                                        alt="Profile"
+                                        className="w-8 h-8 rounded-half object-cover"
+                                    />
+                                </button>
+                            }
 
                             {menuOpen && (
                                 <div
@@ -111,9 +116,8 @@ export default function MainApp() {
                                         className="w-full px-4 py-3 text-left hover:opacity-80"
                                         style={{ color: theme.accent, borderTop: `1px solid ${theme.border}` }}
                                     >
-                                        Invite
+                                        Invite / Join
                                     </button>
-
 
                                     <button onClick={() => { navigate("/setting") }}
                                         className="w-full px-4 py-3 text-left hover:opacity-80"
@@ -140,12 +144,23 @@ export default function MainApp() {
                         <button
                             key={wp.watchPartyId}
                             onClick={() => setSelectedWatchParty(wp)}
-                            className="w-64 p-4 text-left"
+                            className="w-64 p-4 text-center"
                             style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}
                         >
                             {wp.name}
                         </button>
                     ))}
+                    <button onClick={() => { setShowWpModal(true); setMenuOpen(false); }}
+                        className="w-64 px-4 py-3 text-center hover:opacity-80"
+                        style={theme.buttonStyle}>
+                        Create Watch Party
+                    </button>
+                    <button
+                        onClick={() => { setShowInviteModal(true); setMenuOpen(false); }}
+                        className="w-64 px-4 py-3 text-center hover:opacity-80"
+                        style={theme.buttonStyle}>
+                        Join via Code
+                    </button>
                 </div>
             )}
 
@@ -161,6 +176,12 @@ export default function MainApp() {
                             className="w-50 px-4 py-3 text-center hover:opacity-80"
                             style={{ color: theme.text }}>
                             + Watch Party
+                        </button>
+                        <button
+                            onClick={() => { setShowInviteModal(true); setMenuOpen(false); }}
+                            className="w-50 px-4 py-3 text-center hover:opacity-80"
+                            style={{ color: theme.text }}>
+                            Invite/Join
                         </button>
                     </div>
                 </div>

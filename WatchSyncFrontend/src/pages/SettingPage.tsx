@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { PiArrowFatLineDownFill, PiArrowFatLineUpFill } from "react-icons/pi";
+import { PiArrowFatLineDownFill, PiArrowFatLineLeftFill, PiArrowFatLineUpFill } from "react-icons/pi";
 import { theme } from "../theme";
 import { useAuth } from "../context/AuthContext";
 import { useWatchParty } from "../hooks/useWatchParties";
-import { updateProfile } from "../api/client";
+import { updateProfile, uploadAvatar } from "../api/client";
 import WatchPartyEditor from "../components/WatchPartyEditor";
 import Modal from "../components/Modal";
 
@@ -24,11 +24,19 @@ export default function SettingPage() {
 
     const [displayName, setDisplayName] = useState("");
     const [email, setEmail] = useState("");
+    const [avatar, setAvatar] = useState("");
+    const [selectedAvatarFile, setSelectedAvatarFile] = useState<File | null>(null);
+    const [avatarPreview, setAvatarPreview] = useState("");
 
     useEffect(() => {
         if (user) {
             setDisplayName(user.displayName);
             setEmail(user.email);
+            setAvatar(user.avatarUrl || "");
+
+            if (!selectedAvatarFile) {
+                setAvatarPreview(user.avatarUrl || "");
+            }
         }
     }, [user]);
 
@@ -36,13 +44,39 @@ export default function SettingPage() {
         setOpenSection(openSection === id ? null : id);
     };
 
+    function handleAvatarChange(
+        e: React.ChangeEvent<HTMLInputElement>
+    ) {
+        const file = e.target.files?.[0];
 
+        if (!file) return;
+        console.log("selected", file);
+        console.log("BEFORE STATE");
+        setSelectedAvatarFile(file);
+        console.log("AFTER STATE");
+
+        const previewUrl = URL.createObjectURL(file);
+        setAvatarPreview(previewUrl);
+    }
 
     async function handleSaveProfile() {
         try {
             setSavingProfile(true);
 
-            const updatedUser = await updateProfile(displayName, email);
+            let avatarUrl = avatar;
+
+            if (selectedAvatarFile) {
+                const result = await uploadAvatar(selectedAvatarFile);
+                avatarUrl = result.avatarUrl;
+            }
+
+
+            const updatedUser = await updateProfile(
+                displayName,
+                email,
+                avatarUrl
+            );
+
 
             setUser(updatedUser);
 
@@ -51,9 +85,14 @@ export default function SettingPage() {
                 JSON.stringify(updatedUser)
             );
 
+
+            setAvatar(updatedUser.avatarUrl || "");
+            setAvatarPreview(updatedUser.avatarUrl || "");
+            setSelectedAvatarFile(null);
+
             setShowSavedModal(true);
-        }
-        catch (err) {
+
+        } catch (err) {
             console.error(err);
             alert("Failed to update profile");
         }
@@ -79,9 +118,8 @@ export default function SettingPage() {
             >
                 <button
                     onClick={() => navigate(-1)}
-                    className="text-sm opacity-70 hover:opacity-100"
-                >
-                    ← Back
+                    className="h-10  flex items-center gap-2 font-medium">
+                    <PiArrowFatLineLeftFill></PiArrowFatLineLeftFill> <span>Back</span>
                 </button>
 
                 <h1 className="text-lg font-bold">Settings</h1>
@@ -107,8 +145,13 @@ export default function SettingPage() {
                     </button>
 
                     {openSection === "profile" && (
+
                         <div className="px-4 pb-4 flex flex-col gap-3">
 
+                            <img
+                                src={avatarPreview || "/default-avatar.png"}
+                                className="w-20 h-20 rounded-full object-cover mx-auto"
+                            />
                             <input
                                 value={displayName}
                                 onChange={(e) => setDisplayName(e.target.value)}
@@ -122,7 +165,26 @@ export default function SettingPage() {
                                 placeholder="Email"
                                 className="px-3 py-2 rounded bg-black/30 outline-none"
                             />
-
+                            <div className="px-24 pb-2 flex flex-col gap-2 items-center">
+                                <label
+                                    htmlFor="avatar-upload"
+                                    className="cursor-pointer px-4 py-2 rounded font-medium text-sm w-full text-center"
+                                    style={{
+                                        backgroundColor: theme.card,
+                                        border: `1px solid ${theme.border}`,
+                                        color: theme.text
+                                    }}
+                                >
+                                    {selectedAvatarFile ? selectedAvatarFile.name : "Choose a photo"}
+                                </label>
+                                <input
+                                    id="avatar-upload"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarChange}
+                                    className="hidden"
+                                />
+                            </div>
                             <button
                                 onClick={handleSaveProfile}
                                 disabled={savingProfile}
@@ -146,16 +208,21 @@ export default function SettingPage() {
                         border: `1px solid ${theme.border}`
                     }}
                 >
-                    <button
-                        onClick={() => toggleSection("watchparties")}
-                        className="w-full flex justify-between items-center px-4 py-3 font-semibold"
-                    >
-                        Edit Watch Parties
+                    {watchParties.length > 1 && (
+                        <button
+                            onClick={() => toggleSection("watchparties")}
+                            className="w-full flex justify-between items-center px-4 py-3 font-semibold"
+                        >
+                            Edit Watch Parties
 
-                        {openSection === "watchparties"
-                            ? <PiArrowFatLineUpFill size={16} />
-                            : <PiArrowFatLineDownFill size={16} />}
-                    </button>
+                            {
+
+                                openSection === "watchparties"
+                                    ? <PiArrowFatLineUpFill size={16} />
+                                    : <PiArrowFatLineDownFill size={16} />
+                            }
+                        </button>
+                    )}
 
                     {openSection === "watchparties" && (
                         <div className="px-3 sm:px-4 pb-4 flex flex-col gap-4">
@@ -190,44 +257,47 @@ export default function SettingPage() {
 
             </div>
 
-            <p
-                className="text-xs text-center opacity-50 mt-8 px-4 pb-6"
-            >
-                TVMaze data is used for show information and images.
-                Data provided by TVMaze API.
+            <p className="text-xs text-center opacity-50 mt-8 px-4 pb-6 ">
+                <u>
+                    <a rel="TVMaze" href="https://www.tvmaze.com" >
+                        Data and images provided by TV Maze
+                    </a>
+                </u>
             </p>
 
-            {showSavedModal && (
-                <Modal onClose={() => setShowSavedModal(false)}>
-                    <div
-                        className="flex flex-col gap-4 p-6 w-80 items-center text-center"
-                        style={{
-                            backgroundColor: theme.card,
-                            borderRadius: theme.radius,
-                            border: `1px solid ${theme.border}`
-                        }}
-                    >
-                        <h2 className="font-bold text-lg">
-                            Saved!
-                        </h2>
-
-                        <p
-                            className="text-sm"
-                            style={{ color: theme.textMuted }}
+            {
+                showSavedModal && (
+                    <Modal onClose={() => setShowSavedModal(false)}>
+                        <div
+                            className="flex flex-col gap-4 p-6 w-80 items-center text-center"
+                            style={{
+                                backgroundColor: theme.card,
+                                borderRadius: theme.radius,
+                                border: `1px solid ${theme.border}`
+                            }}
                         >
-                            Your changes have been saved successfully.
-                        </p>
+                            <h2 className="font-bold text-lg">
+                                Saved!
+                            </h2>
 
-                        <button
-                            onClick={() => setShowSavedModal(false)}
-                            style={theme.buttonStyle}
-                        >
-                            OK
-                        </button>
-                    </div>
-                </Modal>
-            )}
-        </div>
+                            <p
+                                className="text-sm"
+                                style={{ color: theme.textMuted }}
+                            >
+                                Your changes have been saved successfully.
+                            </p>
+
+                            <button
+                                onClick={() => setShowSavedModal(false)}
+                                style={theme.buttonStyle}
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </Modal>
+                )
+            }
+        </div >
     );
 }
 

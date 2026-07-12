@@ -82,7 +82,6 @@ namespace WatchSync.Api
 
             var app = builder.Build();
 
-            // Migrations beim Start automatisch anwenden
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -95,8 +94,10 @@ namespace WatchSync.Api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-                app.UseHttpsRedirection();   // nur lokal
+                app.UseHttpsRedirection();   
             }
+
+            app.UseStaticFiles();
 
             app.UseAuthentication();
             app.UseAuthorization();
