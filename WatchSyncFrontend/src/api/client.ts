@@ -41,6 +41,41 @@ export async function registerUser(email: string, password: string, displayName:
     }
 }
 
+export async function forgotPassword(email: string): Promise<void> {
+    const response = await fetch(BASE_URL + '/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Something went wrong' }));
+        throw new Error(error.message || 'Failed to send reset email');
+    }
+}
+
+export async function resetPassword(email: string, token: string, newPassword: string): Promise<void> {
+
+    const response = await fetch(BASE_URL + "/auth/reset-password", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            email,
+            token,
+            newPassword
+        })
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message ?? "Password reset failed");
+    }
+}
+
 // Data
 export async function getShows(): Promise<Show[]> {
     return get<Show[]>('/shows');

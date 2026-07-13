@@ -31,6 +31,7 @@ export default function LoginPage() {
             <div className="w-full max-w-sm p-8" style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}` }}>
                 <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: theme.accent }}>WatchSync</h1>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
                     <input
                         type="text"
                         placeholder="Username"
@@ -54,7 +55,15 @@ export default function LoginPage() {
                         {loading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
-                <p className="mt-4 text-center text-sm" style={{ color: theme.textMuted }}>
+                <p className="mt-3 text-center text-sm">
+                    <Link
+                        to="/forgot-password"
+                        style={{ color: theme.accent }}
+                    >
+                        Forgot password?
+                    </Link>
+                </p>
+                <p className="mt-1 text-center text-sm" style={{ color: theme.textMuted }}>
                     No account? <Link to="/register" style={{ color: theme.accent }}>Register</Link>
                 </p>
             </div>

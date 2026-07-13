@@ -184,6 +184,65 @@ namespace WatchSync.Api.Controllers
             });
         }
 
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            // absichtlich immer OK zurückgeben
+            // verhindert, dass man herausfindet, welche Emails existieren
+            if (user == null)
+            {
+                return Ok(new
+                {
+                    message = "If an account exists, a reset link was generated."
+                });
+            }
+
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+
+            var frontendUrl = _configuration["FrontendUrl"];
+
+            var resetLink =
+                $"{frontendUrl}/reset-password?email={user.Email}&token={Uri.EscapeDataString(token)}";
+
+            return Ok(new
+            {
+                message = "Reset link generated",
+                resetLink
+            });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordDto dto)
+        {
+            var user = await _userManager.FindByEmailAsync(dto.Email);
+
+            if (user == null)
+                return BadRequest();
+
+            var result = await _userManager.ResetPasswordAsync(
+                user,
+                dto.Token,
+                dto.NewPassword
+            );
+
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+
+            return Ok(new
+            {
+                message = "Password changed successfully"
+            });
+        }
+
+
         private object GenerateJwtToken(ApplicationUser user)
         {
             var key = new SymmetricSecurityKey(
