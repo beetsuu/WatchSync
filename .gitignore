@@ -403,3 +403,4 @@ FodyWeavers.xsd
 **/launchSettings.json
 
 wwwroot/uploads/
+WatchSync.Api/wwwroot

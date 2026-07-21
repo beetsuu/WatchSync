@@ -292,10 +292,15 @@ export async function getShowDetails(id: number) {
 
 
 export function getAvatarUrl(url?: string) {
+    console.log("AVATAR INPUT:", url);
     if (!url) return "/default-avatar.png";
 
     if (url === "/default-avatar.png") {
         return "/default-avatar.png";
+    }
+
+    if (url.includes("/uploads/avatars")) {
+        return "https://api.radpour.dev" + url.substring(url.indexOf("/uploads"));
     }
 
     if (url.startsWith("http")) {

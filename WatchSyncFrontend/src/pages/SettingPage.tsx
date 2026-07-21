@@ -35,11 +35,7 @@ export default function SettingPage() {
             setAvatar(user.avatarUrl || "");
 
             if (!selectedAvatarFile) {
-                setAvatarPreview(
-                    user.avatarUrl
-                        ? getAvatarUrl(user.avatarUrl)
-                        : ""
-                );
+                setAvatarPreview(user.avatarUrl || "");
             }
         }
     }, [user]);
