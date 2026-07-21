@@ -4,7 +4,7 @@ import { PiArrowFatLineDownFill, PiArrowFatLineLeftFill, PiArrowFatLineUpFill } 
 import { theme } from "../theme";
 import { useAuth } from "../context/AuthContext";
 import { useWatchParty } from "../hooks/useWatchParties";
-import { updateProfile, uploadAvatar } from "../api/client";
+import { updateProfile, uploadAvatar, getAvatarUrl } from "../api/client";
 import WatchPartyEditor from "../components/WatchPartyEditor";
 import Modal from "../components/Modal";
 
@@ -35,7 +35,11 @@ export default function SettingPage() {
             setAvatar(user.avatarUrl || "");
 
             if (!selectedAvatarFile) {
-                setAvatarPreview(user.avatarUrl || "");
+                setAvatarPreview(
+                    user.avatarUrl
+                        ? getAvatarUrl(user.avatarUrl)
+                        : ""
+                );
             }
         }
     }, [user]);
@@ -65,11 +69,12 @@ export default function SettingPage() {
 
             let avatarUrl = avatar;
 
-            if (selectedAvatarFile) {
-                const result = await uploadAvatar(selectedAvatarFile);
-                avatarUrl = result.avatarUrl;
-            }
+            let uploadResult = null;
 
+            if (selectedAvatarFile) {
+                uploadResult = await uploadAvatar(selectedAvatarFile);
+                avatarUrl = uploadResult.avatarUrl;
+            }
 
             const updatedUser = await updateProfile(
                 displayName,
@@ -77,6 +82,8 @@ export default function SettingPage() {
                 avatarUrl
             );
 
+            console.log("upload result:", uploadResult);
+            console.log("updated user:", updatedUser);
 
             setUser(updatedUser);
 
@@ -85,11 +92,15 @@ export default function SettingPage() {
                 JSON.stringify(updatedUser)
             );
 
-
             setAvatar(updatedUser.avatarUrl || "");
-            setAvatarPreview(updatedUser.avatarUrl || "");
-            setSelectedAvatarFile(null);
 
+            setAvatarPreview(
+                updatedUser.avatarUrl
+                    ? getAvatarUrl(updatedUser.avatarUrl)
+                    : ""
+            );
+
+            setSelectedAvatarFile(null);
             setShowSavedModal(true);
 
         } catch (err) {
@@ -149,7 +160,13 @@ export default function SettingPage() {
                         <div className="px-4 pb-4 flex flex-col gap-3">
 
                             <img
-                                src={avatarPreview || "/default-avatar.png"}
+                                src={
+                                    avatarPreview
+                                        ? avatarPreview.startsWith("blob:")
+                                            ? avatarPreview
+                                            : getAvatarUrl(avatarPreview)
+                                        : "/default-avatar.png"
+                                }
                                 className="w-20 h-20 rounded-full object-cover mx-auto"
                             />
                             <input

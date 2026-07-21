@@ -8,6 +8,7 @@ export interface Show {
     currentEpisode: number;
     coverUrl: string | null;
     createdAt: string;
+    addedByAvatarUrl: string;
 }
 
 export interface CreateShowDto {
@@ -52,7 +53,7 @@ export interface WatchPartyMember {
     watchPartyId: number;
     userId: string;
     displayName: string;
-    avatarUrl: string | null;
+    avatarUrl: string;
     turnOrder: number;
     joinedAt: string;
     isOwner: boolean;

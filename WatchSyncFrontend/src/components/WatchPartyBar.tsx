@@ -1,9 +1,12 @@
-import type { WatchParty } from "../types/index.ts";
+import type { WatchParty, WatchPartyMember } from "../types/index.ts";
 import { theme } from "../theme";
 import { PiArrowFatLineLeftFill, PiArrowFatLineRightFill } from "react-icons/pi";
+import { getAvatarUrl } from "../api/client";
 
 
-function WatchPartyBar({ watchParty, currentTurnName, onPrevUser, onNextUser, memberCount }: { watchParty: WatchParty, currentTurnName: string, onPrevUser: () => void, onNextUser: () => void, memberCount: number }) {
+function WatchPartyBar({ watchParty, currentTurnMember, onPrevUser, onNextUser, memberCount }: { watchParty: WatchParty, currentTurnMember: WatchPartyMember | null | undefined, onPrevUser: () => void, onNextUser: () => void, memberCount: number }) {
+
+    console.log(currentTurnMember);
     return (
         <div className="flex items-center gap-2">
             {memberCount > 1 && (
@@ -13,9 +16,36 @@ function WatchPartyBar({ watchParty, currentTurnName, onPrevUser, onNextUser, me
             )}
 
             <div className="flex flex-col items-center">
-                <span className="font-bold text-lg">{currentTurnName}</span>
+                {currentTurnMember ? (
+                    <div className="flex items-center gap-2">
+                        <img
+                            src={
+                                currentTurnMember.avatarUrl
+                                    ? getAvatarUrl(currentTurnMember.avatarUrl)
+                                    : "/default-avatar.png"
+                            }
+                            alt="Profile"
+                            className="w-8 h-8 rounded-full object-cover"
+                        />
+
+                        <span className="font-bold text-lg">
+                            {currentTurnMember.displayName}
+                        </span>
+                    </div>
+                ) : (
+                    <span className="font-bold text-lg">
+                        Unknown
+                    </span>
+                )}
+
                 {watchParty.turnLimit > 0 &&
-                    <span style={{ fontFamily: 'monospace', color: theme.textMuted, fontSize: '13px' }}>
+                    <span
+                        style={{
+                            fontFamily: 'monospace',
+                            color: theme.textMuted,
+                            fontSize: '13px'
+                        }}
+                    >
                         {watchParty.currentTurnCount} / {watchParty.turnLimit}
                     </span>
                 }

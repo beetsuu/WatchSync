@@ -2,6 +2,7 @@ import { useShows } from '../hooks/useShows';
 import { useWatchParty } from '../hooks/useWatchParties';
 import { useState } from 'react';
 import { theme } from '../theme';
+import { getAvatarUrl } from '../api/client';
 import WatchPartyBar from '../components/WatchPartyBar';
 import AddShowModal from '../components/AddShowModal';
 import ShowList from '../components/ShowList';
@@ -72,7 +73,7 @@ export default function MainApp() {
                             <div className="order-3 w-full sm:order-2 sm:flex-1 sm:w-auto flex justify-center py-2 sm:py-0">
                                 <WatchPartyBar
                                     watchParty={selectedWatchParty}
-                                    currentTurnName={currentTurnMember?.displayName ?? '?'}
+                                    currentTurnMember={currentTurnMember}
                                     onPrevUser={handlePrevUser}
                                     onNextUser={handleNextUser}
                                     memberCount={members.length}
@@ -88,9 +89,13 @@ export default function MainApp() {
                                     style={{ backgroundColor: theme.card, borderRadius: theme.radius, border: `1px solid ${theme.border}`, fontSize: '16px' }}>
                                     <span>{loggedInUser?.displayName}</span>
                                     <img
-                                        src={loggedInUser?.avatarUrl || "/default-avatar.png"}
+                                        src={
+                                            loggedInUser?.avatarUrl
+                                                ? getAvatarUrl(loggedInUser.avatarUrl)
+                                                : "../default-avatar.png"
+                                        }
                                         alt="Profile"
-                                        className="w-8 h-8 rounded-half object-cover"
+                                        className="w-8 h-8 rounded-full object-cover"
                                     />
                                 </button>
                             }

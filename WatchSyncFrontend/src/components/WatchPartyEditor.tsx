@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getWatchPartyMembers, leaveWatchParty, updateWatchPartyMembers } from "../api/client";
+import { getWatchPartyMembers, leaveWatchParty, updateWatchPartyMembers, getAvatarUrl } from "../api/client";
 import { theme } from "../theme";
 import type { WatchPartyMember } from "../types";
 import { useAuth } from "../context/AuthContext";
@@ -17,7 +17,6 @@ function WatchPartyEditor({
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [showSavedModal, setShowSavedModal] = useState(false);
 
-
     const [members, setMembers] = useState<WatchPartyMember[]>([]);
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
@@ -28,6 +27,8 @@ function WatchPartyEditor({
     useEffect(() => {
         getWatchPartyMembers(watchParty.watchPartyId)
             .then(data => {
+                console.log("watch party members:", JSON.stringify(data, null, 2));
+
                 const sortedMembers = [...data].sort((a, b) => {
                     if (a.isOwner === b.isOwner) return 0;
                     return a.isOwner ? -1 : 1;
@@ -51,7 +52,6 @@ function WatchPartyEditor({
         );
     }
 
-
     async function handleSave() {
 
         await onSave({
@@ -59,7 +59,6 @@ function WatchPartyEditor({
             name,
             turnLimit
         });
-
 
         if (currentUserIsOwner) {
             await updateWatchPartyMembers(
@@ -87,11 +86,9 @@ function WatchPartyEditor({
         }
     }
 
-
     if (watchParty.isPersonal) {
         return null;
     }
-
 
     return (
         <div
@@ -108,7 +105,6 @@ function WatchPartyEditor({
                 className="w-full px-3 py-2 rounded bg-black/30 outline-none"
             />
 
-
             <input
                 type="number"
                 min={1}
@@ -120,52 +116,55 @@ function WatchPartyEditor({
                 className="w-full px-3 py-2 rounded bg-black/30 outline-none"
             />
 
-
             <div className="flex flex-col gap-2">
 
                 <span className="font-semibold">
                     Members
                 </span>
 
-
                 {members.map(member => (
-
                     <label
                         key={member.userId}
-                        className="flex items-center justify-between gap-2"
+                        className="flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg"
+                        style={{
+                            backgroundColor: "rgba(255,255,255,0.03)"
+                        }}
                     >
 
-                        <span >
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
 
-                            {member.displayName}
+                            <img
+                                src={getAvatarUrl(member.avatarUrl)}
+                                alt={member.displayName}
+                                style={{
+                                    width: "32px",
+                                    height: "32px",
+                                    borderRadius: "9999px",
+                                    objectFit: "cover",
+                                    flexShrink: 0
+                                }}
+                            />
 
-                            {member.isOwner && (
-                                <span
-                                    style={{
-                                        color: theme.accent
-                                    }}
-                                >
-                                    {" "}(Owner)
-                                </span>
-                            )}
+                            <span>{member.displayName}</span>
 
-                        </span>
+                        </div>
 
+                        {member.isOwner && (
+                            <span style={{ color: theme.accent }}>
+                                (Owner)
+                            </span>
+                        )}
 
                         {currentUserIsOwner && !member.isOwner && (
                             <input
                                 type="checkbox"
                                 checked={selectedMembers.includes(member.userId)}
-                                onChange={() =>
-                                    toggleMember(member.userId)
-                                }
+                                onChange={() => toggleMember(member.userId)}
                             />
                         )}
 
                     </label>
-
                 ))}
-
             </div>
 
             {currentUserIsOwner && (
@@ -183,7 +182,6 @@ function WatchPartyEditor({
                         Save
                     </button>
 
-
                     <button
                         onClick={() => setShowDeleteConfirm(true)}
                         className="w-full sm:w-auto px-4 py-2 rounded font-bold"
@@ -199,7 +197,6 @@ function WatchPartyEditor({
 
             )}
 
-
             {!currentUserIsOwner && (
                 <button
                     onClick={handleLeave}
@@ -209,6 +206,7 @@ function WatchPartyEditor({
                     Leave Watch Party
                 </button>
             )}
+
             {showDeleteConfirm && (
                 <Modal onClose={() => setShowDeleteConfirm(false)}>
                     <div
@@ -250,6 +248,7 @@ function WatchPartyEditor({
                     </div>
                 </Modal>
             )}
+
             {showSavedModal && (
                 <Modal onClose={() => setShowSavedModal(false)}>
                     <div

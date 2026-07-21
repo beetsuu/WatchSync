@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWatchParties, updateWatchParty, createWatchParty, getAllWatchPartyMembers, deleteWatchParty, leaveWatchParty } from '../api/client';
+import { getWatchParties, getWatchPartyMembers, updateWatchParty, createWatchParty, getAllWatchPartyMembers, deleteWatchParty, leaveWatchParty } from '../api/client';
 import type { WatchParty, WatchPartyMember } from '../types';
 
 export function useWatchParty() {
@@ -9,12 +9,23 @@ export function useWatchParty() {
 
     useEffect(() => {
         getWatchParties().then(data => setWatchParties(data));
-        getAllWatchPartyMembers().then(data => setAllMembers(data.sort((a, b) => a.turnOrder - b.turnOrder)));
     }, []);
 
-    const members = selectedWatchParty
-        ? allMembers.filter(m => m.watchPartyId === selectedWatchParty.watchPartyId)
-        : [];
+    useEffect(() => {
+        if (!selectedWatchParty) {
+            setAllMembers([]);
+            return;
+        }
+
+        getWatchPartyMembers(selectedWatchParty.watchPartyId)
+            .then(data =>
+                setAllMembers(
+                    data.sort((a, b) => a.turnOrder - b.turnOrder)
+                )
+            );
+    }, [selectedWatchParty]);
+
+    const members = allMembers;
 
     function handleTurnCountUp() {
         if (!selectedWatchParty) return;

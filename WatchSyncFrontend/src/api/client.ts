@@ -294,6 +294,10 @@ export async function getShowDetails(id: number) {
 export function getAvatarUrl(url?: string) {
     if (!url) return "/default-avatar.png";
 
+    if (url === "/default-avatar.png") {
+        return "/default-avatar.png";
+    }
+
     if (url.startsWith("http")) {
         return url;
     }

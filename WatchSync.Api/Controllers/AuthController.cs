@@ -35,6 +35,7 @@ namespace WatchSync.Api.Controllers
             {
                 UserName = dto.DisplayName,
                 Email = dto.Email,
+                AvatarUrl = "/default-avatar.png",
                 DisplayName = dto.DisplayName,
                 CreatedAt = DateTime.UtcNow
             };
